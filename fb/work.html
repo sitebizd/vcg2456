@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Image Upload</title>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <select id="folderSelect">
+      
+		<option>Folder 1</option>
+                        <option>Folder 2</option>
+		
+		
+    </select><br><br>
+    <input type="file" id="imageUpload" accept="image/*"><br><br>
+    <button id="uploadButton">Upload</button><br><br>
+    <progress id="uploadProgress" value="0" max="100"></progress><br><br>
+    <img id="imagePreview" width="200px" src="" alt="Image Preview"><br><br>
+    <button id="copyUrlButton">Copy Image URL</button>
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-storage.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: process.env.API_KEY,
+            authDomain: process.env.AUTH_DOMAIN,
+            projectId: process.env.PROJECT_ID,
+            storageBucket: process.env.STORAGE_BUCKET,
+            messagingSenderId: process.env.MESSAGING_SENDER_ID,
+            appId: process.env.APP_ID
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        var folderSelect = document.getElementById('folderSelect');
+        var imageUpload = document.getElementById('imageUpload');
+        var uploadButton = document.getElementById('uploadButton');
+        var uploadProgress = document.getElementById('uploadProgress');
+        var imagePreview = document.getElementById('imagePreview');
+        var copyUrlButton = document.getElementById('copyUrlButton');
+
+        // Populate folderSelect options dynamically
+        // ...
+
+        uploadButton.addEventListener('click', function() {
+            var file = imageUpload.files[0];
+            var folder = folderSelect.value;
+            var storageRef = firebase.storage().ref(folder + '/' + file.name);
+            var uploadTask = storageRef.put(file);
+
+            uploadTask.on('state_changed', function(snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                uploadProgress.value = progress;
+            }, function(error) {
+                console.error(error);
+            }, function() {
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    imagePreview.src = downloadURL;
+                    copyUrlButton.addEventListener('click', function() {
+                        navigator.clipboard.writeText(downloadURL);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
