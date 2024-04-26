@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- 1) Select firebase storage folder from dropdown list -->
+    <select id="folderSelect">
+        <option value="folder1">Folder 1</option>
+        <option value="folder2">Folder 2</option>
+        <!-- Add more options as needed -->
+    </select>
+
+    <!-- 2) Upload image button -->
+    <input type="file" id="imageUpload">
+
+    <!-- 3) Image uploading progress status -->
+    <progress value="0" max="100" id="uploader">0%</progress>
+
+    <!-- 4) Preview of uploaded images -->
+    <img id="imagePreview" width="200px">
+
+    <!-- 5) Uploaded image copy url button option -->
+    <button id="copyUrlButton">Copy Image URL</button>
+    <input type="text" id="imageUrl" readonly>
+	<button onclick="location.reload();">Upload Another Image</button>
+	
+</body>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-storage.js"></script>
+<script type="text/javascript" src="app.js"></script>
+</html>
