@@ -1,32 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>QR Code Generator</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        function generateQRCode() {
-            var text = document.getElementById("text").value;
-            var googleApiUrl = "https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=" + encodeURIComponent(text);
-            document.getElementById("qrCodeImage").src = googleApiUrl;
-        }
-
-        function downloadQRCode() {
-            var downloadLink = document.createElement("a");
-            var qrCodeImage = document.getElementById("qrCodeImage").src;
-            downloadLink.href = qrCodeImage;
-            downloadLink.download = "QRCode.png";
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator</title>
 </head>
 <body>
-    <input type="text" id="text" placeholder="Enter text for QR code">
-    <button onclick="generateQRCode()">Generate QR Code</button>
-    <br><br>
-    <img id="qrCodeImage" alt="QR Code will appear here" title="Your QR Code">
-    <br>
-    <button onclick="downloadQRCode()">Download QR Code</button>
+  <h1>QR Code Generator</h1>
+  <div>
+    <input type="text" id="text-input" placeholder="Enter text for QR code">
+    <button id="generate-btn">Generate QR Code</button>
+  </div>
+  <div id="qr-code-container"></div>
+  <button id="download-btn" disabled>Download QR Code</button>
+  <script src="script.js"></script>
 </body>
 </html>
