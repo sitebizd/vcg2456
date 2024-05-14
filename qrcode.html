@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>QR Code Generator</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <style>
+        #qrcode {
+            width: 512px;
+            height: 512px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
 <body>
 
-<h2>QR Code Generator</h2>
-
 <div>
-  <label for="text">Enter Text:</label><br>
-  <input type="text" id="text" name="text"><br>
-  <button onclick="generateQR()">Generate QR Code</button>
-  <button onclick="downloadQR()">Download QR Code</button>
+    <input type="text" id="text" placeholder="Enter text for QR code" />
+    <button onclick="generateQRCode()">Generate QR Code</button>
 </div>
 
 <div id="qrcode"></div>
+<button onclick="downloadQRCode()">Download QR Code</button>
 
 <script>
-function generateQR() {
-  var text = document.getElementById("text").value;
-  var url = "https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=" + encodeURI(text);
-  document.getElementById("qrcode").innerHTML = '<img src="'+url+'" alt="QR Code"/>';
+function generateQRCode() {
+    let text = document.getElementById('text').value;
+    let googleApiUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=' + encodeURIComponent(text);
+    $('#qrcode').html('<img src="' + googleApiUrl + '" alt="QR Code" />');
 }
 
-function downloadQR() {
-  var text = document.getElementById("text").value;
-  var url = "https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=" + encodeURI(text);
-  var downloadLink = document.createElement("a");
-  downloadLink.href = url;
-  downloadLink.download = "QRCode.png";
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-  document.body.removeChild(downloadLink);
+function downloadQRCode() {
+    let qrcodeImg = document.querySelector('#qrcode img');
+    let imageUrl = qrcodeImg.src;
+    let anchor = document.createElement('a');
+    anchor.href = imageUrl;
+    anchor.download = 'qrcode.png';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
 }
 </script>
 
