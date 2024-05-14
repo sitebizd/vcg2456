@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>QR Code Generator</h2>
+
+<div>
+  <label for="text">Enter Text:</label><br>
+  <input type="text" id="text" name="text"><br>
+  <button onclick="generateQR()">Generate QR Code</button>
+  <button onclick="downloadQR()">Download QR Code</button>
+</div>
+
+<div id="qrcode"></div>
+
+<script>
+function generateQR() {
+  var text = document.getElementById("text").value;
+  var url = "https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=" + encodeURI(text);
+  document.getElementById("qrcode").innerHTML = '<img src="'+url+'" alt="QR Code"/>';
+}
+
+function downloadQR() {
+  var text = document.getElementById("text").value;
+  var url = "https://chart.googleapis.com/chart?cht=qr&chs=512x512&chl=" + encodeURI(text);
+  var downloadLink = document.createElement("a");
+  downloadLink.href = url;
+  downloadLink.download = "QRCode.png";
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+</script>
+
+</body>
+</html>
