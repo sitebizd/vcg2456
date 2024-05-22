@@ -13,7 +13,7 @@ function submitData() {
   request.open('GET', url);
   request.onreadystatechange = function() {
     if(request.readyState == 4 && request.status == 200) {
-      window.location.href = "thanks.html";
+      window.location.href = "https://vedchitra.com/";
     }
   }
   request.send();
