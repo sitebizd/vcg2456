@@ -4,26 +4,32 @@
 
 <h2>Business Form</h2>
 
-<form id="businessForm">
-  <label for="bname">Business Name:</label><br>
-  <input type="text" id="bname" name="bname"><br>
-  <label for="address">Address:</label><br>
-  <input type="text" id="address" name="address"><br>
-  <label for="category">Category:</label><br>
-  <select id="category" name="category">
+<form id="myForm">
+  Business Name:<br>
+  <input type="text" id="businessName">
+  <br>
+  Address:<br>
+  <input type="text" id="address">
+  <br>
+  Category:<br>
+  <select id="category">
     <option value="Hotel">Hotel</option>
     <option value="Education">Education</option>
     <option value="Hospital">Hospital</option>
     <option value="Services">Services</option>
-  </select><br>
-  <label for="phone">Phone Number:</label><br>
-  <input type="text" id="phone" name="phone"><br>
-  <label for="description">Business Description:</label><br>
-  <textarea id="description" name="description"></textarea><br>
-  <input type="submit" value="Submit">
-</form>
+    <!-- Add more options as needed -->
+  </select>
+  <br>
+  Phone Number:<br>
+  <input type="text" id="phoneNumber">
+  <br>
+  Business Description:<br>
+  <input type="text" id="description">
+  <br><br>
+  <input type="button" value="Submit" onclick="submitData()">
+</form> 
 
-<script src="https://script.google.com/macros/s/AKfycbyhSBZuaHR71kMdxrx1QlCQZflMd_tXZvNDgar43aZq3Htfz533bxezjxH8wjYVz8p_JA/exec"></script>
+<script src="form.js"></script>
 
 </body>
 </html>
