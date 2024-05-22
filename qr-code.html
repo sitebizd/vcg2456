@@ -29,45 +29,38 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
 	margin: 10px;
 	}
 </style>
- <script src=
-	"https://code.jquery.com/jquery-3.5.1.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
 
-<script>
-	// Function to HTML encode the text
-	// This creates a new hidden element,
-	// inserts the given text into it 
-	// and outputs it out as HTML
-	function htmlEncode(value) {
-	return $('<div/>').text(value)
-		.html();
-	}
-
-	$(function () {
-
-	// Specify an onclick function
-	// for the generate button
-	$('#generate').click(function () {
-
-		// Generate the link that would be
-		// used to generate the QR Code
-		// with the given data 
-		let finalURL =
-'https://chart.googleapis.com/chart?cht=qr&chl=' +
-		htmlEncode($('#content').val()) +
-		'&chs=320x320&chld=L|0'
-
-		// Replace the src of the image with
-		// the QR code image
-		$('.qr-code').attr('src', finalURL);
-	});
-	});
-</script>
   <script async  src="https://cdn.ampproject.org/v0.js"></script>
   <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
   <script async custom-element="amp-sidebar" src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"></script>
   
-  
+  <script>
+function generateQRCode() {
+  var qrText = document.getElementById('text').value;
+  var qrCanvas = document.getElementById('qr-canvas');
+  var qrImage = document.getElementById('qr-image');
+
+  var qr = new QRious({
+    element: qrCanvas,
+    value: qrText,
+    size: 512
+  });
+
+  qrImage.src = qr.toDataURL('image/png');
+  qrImage.style.display = 'block';
+}
+
+function downloadQRCode() {
+  var downloadLink = document.createElement('a');
+  var qrImage = document.getElementById('qr-image').src;
+  downloadLink.href = qrImage;
+  downloadLink.download = 'QRCode.png';
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+</script>
   
 </head>
 <body><amp-sidebar id="sidebar" class="cid-tTubBjYSDR" layout="nodisplay" side="right">
@@ -143,36 +136,24 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
 <div class="container-fluid"><h2 class="amp-section-title align-center amp-fonts-style amp-bold display-5">QR Code Generator</h2><br>
 	<div class="text-center">
 
-	<!-- Get a Placeholder image initially,
-	this will change according to the
-	data entered later -->
-	<img src=
-"https://chart.googleapis.com/chart?cht=qr&chl=Hello+World&chs=320x320&chld=L|0"
-		class="qr-code img-thumbnail img-responsive" />
+	
+	
+	<div>
+  <input type="text" id="text" placeholder="Enter text for QR code">
+  <button onclick="generateQRCode()">Generate QR Code</button>
+</div>
+
+<div>
+  <canvas id="qr-canvas" style="display: none;"></canvas>
+  <img id="qr-image" src="" alt="QR Code" width="320" height="320">
+  <button onclick="downloadQRCode()">Download QR Code</button>
+</div>
+	
+	
+	
+	
 	</div>
-
-	<div class="form-horizontal">
-
-		<p>
-		Website Link:
-		</p>
-		
-
-		<!-- Input box to enter the 
-			required data -->
-		<input type="text" size="500"
-			maxlength="200" class="form-control"
-			id="content" placeholder="https://" />
-		</div>
 	</div>
-
-		
-
-		<!-- Button to generate QR Code for
-		the entered data --><br>
-		<button type="button" class="btn btn-sm btn-black display-4" id="generate">
-			Generate QR Code
-		</button>
 		</div>
 	</div>
 	</div>
