@@ -82,22 +82,7 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
   <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
   <script async custom-element="amp-sidebar" src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"></script>
   
-  <script>
-        document.getElementById("myForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            var url = "https://script.google.com/macros/s/AKfycbxQTggExAk_eOYcAvsEN5KxGG0giM7a61ZB20Nv7dJJBM7GeFdkcw8yiM4nfjfW7qEB/exec"; // Replace with your actual form submission URL
-            var data = new FormData(event.target);
-            fetch(url, { method: 'POST', body: data })
-                .then(response => {
-                    // Redirect to a "thank you" page after successful submission
-                    window.location.href = "thanks.html";
-                })
-                .catch(error => console.error('Error!', error.message));
-            
-            // Disable the submit button to prevent multiple clicks
-            document.getElementById("myForm").querySelector(".form-submit").disabled = true;
-        });
-    </script>
+  
   
 </head>
 <body><amp-sidebar id="sidebar" class="cid-tTubBjYSDR" layout="nodisplay" side="right">
@@ -191,7 +176,7 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
 			</div><br>
 
             <textarea class="form-textarea" id="message" name="message" placeholder="Your Message or Reason for Deletion"></textarea>
-            <button type="submit" class="form-submit">Submit</button>
+            <button type="submit" id="submitBtn" class="form-submit">Submit</button>
         </form>
     </div>
             </div>
@@ -213,5 +198,20 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
 </section>
   
   
+<script>
+document.getElementById("myForm").addEventListener("submit", function(event){
+  event.preventDefault()
+  var url = "https://script.google.com/macros/s/AKfycbxQTggExAk_eOYcAvsEN5KxGG0giM7a61ZB20Nv7dJJBM7GeFdkcw8yiM4nfjfW7qEB/exec"
+  var data = new FormData(event.target)
+  document.getElementById("submitBtn").disabled = true; // disable the button
+  fetch(url, {method: 'POST', body: data})
+    .then(response => window.location.href = "thanks.html")
+    .catch(error => {
+      console.error('Error!', error.message)
+      document.getElementById("submitBtn").disabled = false; // enable the button in case of error
+    })
+})
+</script>
+
 </body>
 </html>
