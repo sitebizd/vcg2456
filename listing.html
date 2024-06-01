@@ -7,13 +7,13 @@
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:image:src" content="">
   <meta property="og:image" content="">
-  <meta name="twitter:title" content="Data deletion form page">
+  <meta name="twitter:title" content="Business Listing form">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
   <link rel="shortcut icon" href="assets/images/Icon.png" type="image/x-icon">
-  <meta name="description" content="App Data deletion form page">
+  <meta name="description" content="Business Listing form page">
   <meta name="amp-script-src" content="">
   
-  <title>Data deletion form</title>
+  <title>Business Listing form</title>
   
 
  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>
@@ -45,7 +45,7 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
         .form-input {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
@@ -53,7 +53,7 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
             width: 100%;
             height: 100px;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
@@ -71,7 +71,23 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
             width: 100%;
         }
 		
-		
+		/* Style for the select element */
+        select.form-select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+			color: #3C3B3B;
+        }
+
+        /* Style for the option elements */
+        select.form-select option {
+            padding: 5px;
+			font-size: 16px;
+			color: #000000;
+        }
 
 
 
@@ -155,30 +171,35 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
         <div class="amp-row">
             <div class="amp-col-sm-12 amp-col-md-10 amp-col-lg-10">
                 <h3 class="amp-fonts-style amp-section-title amp-bold amp-pb-2 display-5">
-                   App Data deletion form page
+                   Business Listing form page
                 </h3>
                 <div class="contact-form">
-        <form id="myForm" action="https://script.google.com/macros/s/AKfycbxQTggExAk_eOYcAvsEN5KxGG0giM7a61ZB20Nv7dJJBM7GeFdkcw8yiM4nfjfW7qEB/exec" method="post">
-            <div class="form-subheading">Fill & Submit the form below to delete your data from our app.</div>
-            <input type="text" class="form-input" id="fname" name="fname" placeholder="Your Name" required>
-            <input type="tel" class="form-input" id="phone" name="phone" placeholder="Mobile Number" pattern="[0-9]{10}" title="Please enter a 10-digit phone number" required>
-            <input type="email" class="form-input" id="email" name="email" placeholder="Email address" required>
-            
-			<input type="text" class="form-input" id="appN" name="appN" placeholder="App Name" required>
+        <form id="myForm" action="https://script.google.com/macros/s/AKfycbz1q-yWgw-y90aSvMAfG0MLKjHlErUfdPTNL__E9qYa6VwvY7RknkWu-oh4xHGB2JfI/exec" method="post">
+            <div class="form-subheading">Fill & Submit the form below to add your business listing in our app.</div>
 			
-			<!-- Checkbox options here -->
-			<div>Is your ad in the app? 
-			<label for="yesRadio">
-			<input type="radio" id="yesRadio" name="yesNo" value="Yes" required>Yes</label>
+			<input type="text" class="form-input" id="fname" name="fname" placeholder="Your Name" required>
+            <input type="text" class="form-input" id="bname" name="bname" placeholder="Business Name" required>
+			<input type="text" class="form-input" id="address" name="address" placeholder="Business Address" required>
 			
-			<label for="noRadio">
-			<input type="radio" id="noRadio" name="yesNo" value="No" required>No</label>
-			</div><br>
+			<select class="form-select" id="market" name="market">
+                <option value="" disabled selected>Select Market area</option>
+                <option value="Ajara">Ajara</option>
+                <option value="Uttur">Uttur</option>
+                <option value="Gavase">Gavase</option>
+                <!-- Add more market options here -->
+            </select>
+			
+			<input type="tel" class="form-input" id="phone" name="phone" placeholder="Mobile Number" required>
+			
+			<input type="tel" class="form-input" id="whatsapp" name="whatsapp" placeholder="Whatsapp Number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required>
+			
+			
 
-            <textarea class="form-textarea" id="message" name="message" placeholder="Your Message or Reason for Deletion"></textarea>
-			        <input type="submit" class="form-submit" id="submitBtn" value="Submit">
-
+            <textarea class="form-textarea" id="description" name="description" placeholder="Business Description"></textarea>
 			
+			<input type="submit" class="form-submit" id="submitBtn" value="Submit">
+
+			 
         </form>
     </div>
             </div>
@@ -203,7 +224,7 @@ body{font-family: Inter;}blockquote{border-color: #170ca4;}div[submit-success] >
 <script>
         document.getElementById("myForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            var url = "https://script.google.com/macros/s/AKfycbxQTggExAk_eOYcAvsEN5KxGG0giM7a61ZB20Nv7dJJBM7GeFdkcw8yiM4nfjfW7qEB/exec"; // Replace with your actual form submission URL
+            var url = "https://script.google.com/macros/s/AKfycbz1q-yWgw-y90aSvMAfG0MLKjHlErUfdPTNL__E9qYa6VwvY7RknkWu-oh4xHGB2JfI/exec"; // Replace with your actual form submission URL
             var data = new FormData(event.target);
             document.getElementById("submitBtn").value = "Submitting form... please wait"; // Change button text
             document.getElementById("submitBtn").disabled = true; // Disable the button
