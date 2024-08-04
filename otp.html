@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mobile OTP Authentication with Firebase</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="firebase-config.js"></script> </head>
+<body>
+  <div class="container">
+    <h2>Mobile OTP Authentication</h2>
+    <form id="authForm">
+      <label for="phoneNumber">Phone Number:</label>
+      <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1234567890" required>
+      <button type="submit">Send OTP</button>
+    </form>
+
+    <div id="otpForm" style="display: none;">
+      <label for="otp">Enter OTP:</label>
+      <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+      <button type="button" id="verifyOtp">Verify OTP</button>
+    </div>
+
+    <div id="authStatus"></div>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+    apiKey: "AIzaSyANsXic-9lWtr6yWD2DxI9I38tmsn4H8f0",
+    authDomain: "business-form-f476f.firebaseapp.com",
+    projectId: "business-form-f476f",
+    storageBucket: "business-form-f476f.appspot.com",
+    messagingSenderId: "932526790723",
+    appId: "1:932526790723:web:000ecd78f30e3f5a9a1cf6"
+  };
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Form submission for sending OTP
+    const authForm = document.getElementById('authForm');
+    authForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const phoneNumber = document.getElementById('phoneNumber').value;
+
+      // Send OTP
+      auth.signInWithPhoneNumber(phoneNumber)
+        .then((confirmationResult) => {
+          window.confirmationResult = confirmationResult;
+          document.getElementById('authForm').style.display = 'none';
+          document.getElementById('otpForm').style.display = 'block';
+          document.getElementById('authStatus').textContent = 'OTP sent!';
+        })
+        .catch((error) => {
+          console.error('Error sending OTP:', error);
+          document.getElementById('authStatus').textContent = 'Error sending OTP. Please try again.';
+        });
+    });
+
+    // Verify OTP
+    const verifyOtpButton = document.getElementById('verifyOtp');
+    verifyOtpButton.addEventListener('click', () => {
+      const otp = document.getElementById('otp').value;
+      window.confirmationResult.confirm(otp)
+        .then((result) => {
+          // User is signed in!
+          const user = result.user;
+          console.log('User signed in:', user);
+          document.getElementById('authStatus').textContent = 'OTP verified successfully!';
+        })
+        .catch((error) => {
+          console.error('Error verifying OTP:', error);
+          document.getElementById('authStatus').textContent = 'Invalid OTP. Please try again.';
+        });
+    });
+  </script>
+</body>
+</html>
