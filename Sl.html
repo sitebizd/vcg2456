@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop-Loss Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+		
+		  .calculator-container label {
+            text-align: right;
+            display: inline-block;
+            width: 150px; /* Adjust width as needed */
+        }
+
+        .calculator-container input {
+            text-align: right;
+        }
+		
+
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Stop-Loss Calculator</h1>
+        <label for="entry-price">Entry Price:</label>
+        <input type="number" id="entry-price" placeholder="Enter Entry Price">
+<br>
+        <label for="stop-loss-percentage">SL Percentage:</label>
+        <input type="number" id="stop-loss-percentage" placeholder="Enter Stop-Loss Percentage">
+<br><br>
+        <button id="calculate">Calculate</button>
+<br>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const calculateButton = document.getElementById('calculate');
+        const entryPriceInput = document.getElementById('entry-price');
+        const stopLossPercentageInput = document.getElementById('stop-loss-percentage');
+        const resultParagraph = document.getElementById('result');
+
+        calculateButton.addEventListener('click', () => {
+            const entryPrice = parseFloat(entryPriceInput.value);
+            const stopLossPercentage = parseFloat(stopLossPercentageInput.value);
+
+            if (isNaN(entryPrice) || isNaN(stopLossPercentage)) {
+                resultParagraph.textContent = 'Please enter valid numbers.';
+                return;
+            }
+
+            const stopLossPrice = entryPrice - (entryPrice * (stopLossPercentage / 100));
+            resultParagraph.textContent = `Stop-Loss Price: ${stopLossPrice.toFixed(2)}`;
+        });
+    </script>
+</body>
+</html>
