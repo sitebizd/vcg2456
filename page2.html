@@ -6,7 +6,7 @@
   <title>Page 2</title>
   <script>
     function fetchData() {
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzAs1dD7YoXAlAYu_9wRR3kHIqvyuthHiO3Hpx3UWtE_XGcW7sGQ2Uih4AOtN41dH3X/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyhWaEj8ktRIb-sZyZPbsmPxW4VJk3szqfSU7sOknGAiUuuSDP47uDV8E1xAt70YHQ3/exec';
       fetch(scriptUrl + '?row=2')
         .then(response => response.json())
         .then(data => {
@@ -15,6 +15,7 @@
           const area = data[2];
           const mobileNumber = data[3];
           const thirdPartyLink = data[4];
+          const imageUrl = data[5]; // URL of the image
 
           document.getElementById('productTitle').innerText = productTitle;
           document.getElementById('productDescription').innerHTML = productDescription;
@@ -35,6 +36,14 @@
           } else {
             document.getElementById('linkButton').style.display = 'none';
           }
+
+          // Show or hide the image based on the image URL
+          if (imageUrl) {
+            document.getElementById('productImage').src = imageUrl;
+            document.getElementById('productImage').style.display = 'block';
+          } else {
+            document.getElementById('productImage').style.display = 'none';
+          }
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -47,6 +56,7 @@
 </head>
 <body>
   <h1 id="productTitle">Loading...</h1>
+  <img id="productImage" src="" alt="Product Image" style="display: none;">
   <p id="productDescription">Loading...</p>
   <p><strong>Area:</strong> <span id="area">Loading...</span></p>
   <p>
