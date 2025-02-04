@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 2</title>
+  <script>
+    function fetchData() {
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwwWP9ucox_YK3YqUxz5PxFw-CEEwE0XhsYXD7vzm_UcwKAVYzhXBNkJMxeHX2tJOJG/exec';
+      fetch(scriptUrl + '?row=2')
+        .then(response => response.json())
+        .then(data => {
+          let content = '';
+          data.forEach((item, index) => {
+            content += `<p>Column ${index + 1}: ${item}</p>`;
+          });
+          document.getElementById('content').innerHTML = content;
+        });
+    }
+    
+    window.onload = fetchData;
+  </script>
+</head>
+<body>
+  <div id="content">Loading...</div>
+</body>
+</html>
