@@ -6,7 +6,7 @@
   <title>Page 2</title>
   <script>
     function fetchData() {
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwBLcv-PPawOXmq88vZ6kBqEdK2GZJP0bN2S0ihq8oCh6FXA9Rolwt8V3w3yeWILsMv/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbzAs1dD7YoXAlAYu_9wRR3kHIqvyuthHiO3Hpx3UWtE_XGcW7sGQ2Uih4AOtN41dH3X/exec';
       fetch(scriptUrl + '?row=2')
         .then(response => response.json())
         .then(data => {
@@ -19,8 +19,22 @@
           document.getElementById('productTitle').innerText = productTitle;
           document.getElementById('productDescription').innerHTML = productDescription;
           document.getElementById('area').innerText = area;
-          document.getElementById('callButton').href = `tel:${mobileNumber}`;
-          document.getElementById('linkButton').href = thirdPartyLink;
+
+          // Show or hide the Call button based on the mobile number
+          if (mobileNumber) {
+            document.getElementById('callButton').href = `tel:${mobileNumber}`;
+            document.getElementById('callButton').style.display = 'inline';
+          } else {
+            document.getElementById('callButton').style.display = 'none';
+          }
+
+          // Show or hide the Visit Website button based on the third-party link
+          if (thirdPartyLink) {
+            document.getElementById('linkButton').href = thirdPartyLink;
+            document.getElementById('linkButton').style.display = 'inline';
+          } else {
+            document.getElementById('linkButton').style.display = 'none';
+          }
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -36,10 +50,10 @@
   <p id="productDescription">Loading...</p>
   <p><strong>Area:</strong> <span id="area">Loading...</span></p>
   <p>
-    <a id="callButton" href="#">Call Now</a>
+    <a id="callButton" href="#" style="display: none;">Call Now</a>
   </p>
   <p>
-    <a id="linkButton" href="#" target="_blank">Visit Website</a>
+    <a id="linkButton" href="#" target="_blank" style="display: none;">Visit Website</a>
   </p>
   <div id="content"></div>
 </body>
