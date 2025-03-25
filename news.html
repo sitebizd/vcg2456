@@ -38,19 +38,6 @@
       color: #555; 
       margin-top: 5px; 
     }
-    .loading { 
-      position: fixed; 
-      top: 0; left: 0; 
-      width: 100%; height: 100%; 
-      background: rgba(0, 0, 0, 0.5); 
-      color: #fff; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      font-size: 2rem; 
-      z-index: 1000;
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -61,8 +48,6 @@
   <!-- News items will be populated here -->
 </ul>
 
-<div class="loading" id="loading">Loading... Please wait</div>
-
 <script>
   // Google Spreadsheet CSV URL
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1RNDG7Zsjt9tnWePRu_1SyseksFG9T5-HuAyARmK2m70/export?format=csv';
@@ -72,21 +57,16 @@
     try {
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
-      const rows = data.split("\n").slice(1); // Skip the header row
+      const rows = parseCSV(data);
       const newsList = document.getElementById('newsList');
 
       rows.forEach(row => {
-        const columns = row.split(",");
-
-        // Assuming your CSV has 3 columns: Source, Title, Link
-        const source = columns[0].replace(/"/g, '').trim();
-        const title = columns[1].replace(/"/g, '').trim();
-        const link = columns[2].replace(/"/g, '').trim();
+        const [source, title, link] = row;
 
         if (title && link) {
           let li = `
             <li>
-              <a href="${link}" target="_blank" onclick="showLoading(event)">${title}</a>
+              <a href="${link}" target="_blank">${title}</a>
               <div class="source">Source: ${source}</div>
             </li>
           `;
@@ -98,18 +78,19 @@
     }
   }
 
-  // Show loading message before opening link
-  function showLoading(event) {
-    event.preventDefault(); // Stop immediate navigation
-    const loading = document.getElementById('loading');
-    loading.style.display = 'flex'; // Show loading
+  // CSV Parser to Handle Commas Inside Quotes
+  function parseCSV(text) {
+    const rows = [];
+    const regex = /(?:\"([^\"]*)\"|([^,]+))/g;  // Handles commas inside quotes
+    const lines = text.trim().split("\n").slice(1);  // Skip header row
 
-    // Open the link after 2 seconds
-    const link = event.currentTarget.href;
-    setTimeout(() => {
-      loading.style.display = 'none';
-      window.open(link, '_blank');
-    }, 2000);
+    lines.forEach(line => {
+      const matches = [...line.matchAll(regex)];
+      const row = matches.map(match => (match[1] || match[2] || "").trim());
+      rows.push(row);
+    });
+
+    return rows;
   }
 
   // Call the Function on Page Load
