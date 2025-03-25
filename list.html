@@ -92,8 +92,17 @@
       while ((match = regex.exec(line))) {
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
-      // Map to our required field structure
-      const [profileID, businessName, businessAddress, category1, category2, image1] = matches;
+      // Map to our required field structure based on correct columns
+      const [
+        profileID, , , , , , , , , 
+        category1, // Column J
+        category2, // Column K
+        , , , , , , , , , 
+        businessName, // Column B
+        businessAddress, // Column C
+        image1 // Column U
+      ] = matches;
+
       if (profileID && businessName) { // Ensure essential data exists
         rows.push({ profileID, businessName, businessAddress, category1, category2, image1 });
       }
