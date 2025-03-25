@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pune News - Latest Updates</title>
+  <style>
+    /* Basic Styling */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background-color: #f4f4f4; 
+      padding: 20px; 
+    }
+    h1 { 
+      text-align: center; 
+      margin-bottom: 20px; 
+      color: #333; 
+    }
+    ul { list-style-type: none; padding: 0; }
+    li { 
+      background-color: #fff; 
+      margin-bottom: 15px; 
+      padding: 15px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+      padding: 15px;
+    }
+    a { 
+      text-decoration: none; 
+      font-size: 1.2rem; 
+      color: #007bff; 
+      font-weight: bold; 
+    }
+    a:hover { text-decoration: underline; }
+    .source { 
+      font-size: 0.9rem; 
+      color: #555; 
+      margin-top: 5px; 
+    }
+    .loading { 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0, 0, 0, 0.5); 
+      color: #fff; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      font-size: 2rem; 
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Pune News - Latest Updates</h1>
+
+<ul id="newsList">
+  <!-- News items will be populated here -->
+</ul>
+
+<div class="loading" id="loading">Loading... Please wait</div>
+
+<script>
+  // Google Spreadsheet CSV URL
+  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1RNDG7Zsjt9tnWePRu_1SyseksFG9T5-HuAyARmK2m70/export?format=csv';
+
+  // Function to Fetch CSV and Parse it
+  async function fetchCSV() {
+    try {
+      const response = await fetch(SPREADSHEET_URL);
+      const data = await response.text();
+      const rows = data.split("\n").slice(1); // Skip the header row
+      const newsList = document.getElementById('newsList');
+
+      rows.forEach(row => {
+        const columns = row.split(",");
+
+        // Assuming your CSV has 3 columns: Source, Title, Link
+        const source = columns[0].replace(/"/g, '').trim();
+        const title = columns[1].replace(/"/g, '').trim();
+        const link = columns[2].replace(/"/g, '').trim();
+
+        if (title && link) {
+          let li = `
+            <li>
+              <a href="${link}" target="_blank" onclick="showLoading(event)">${title}</a>
+              <div class="source">Source: ${source}</div>
+            </li>
+          `;
+          newsList.innerHTML += li;
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching CSV:", error);
+    }
+  }
+
+  // Show loading message before opening link
+  function showLoading(event) {
+    event.preventDefault(); // Stop immediate navigation
+    const loading = document.getElementById('loading');
+    loading.style.display = 'flex'; // Show loading
+
+    // Open the link after 2 seconds
+    const link = event.currentTarget.href;
+    setTimeout(() => {
+      loading.style.display = 'none';
+      window.open(link, '_blank');
+    }, 2000);
+  }
+
+  // Call the Function on Page Load
+  fetchCSV();
+</script>
+
+</body>
+</html>
