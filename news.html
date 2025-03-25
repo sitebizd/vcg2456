@@ -78,16 +78,22 @@
     }
   }
 
-  // CSV Parser to Handle Commas Inside Quotes
+  // CSV Parser to Handle Commas and Quotes Properly
   function parseCSV(text) {
+    const lines = text.trim().split("\n").slice(1); // Skip header row
     const rows = [];
-    const regex = /(?:\"([^\"]*)\"|([^,]+))/g;  // Handles commas inside quotes
-    const lines = text.trim().split("\n").slice(1);  // Skip header row
+
+    // Regex for CSV Parsing (Properly handles commas & quotes)
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const matches = [...line.matchAll(regex)];
-      const row = matches.map(match => (match[1] || match[2] || "").trim());
-      rows.push(row);
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        // If group 1 is matched (text inside quotes), replace double quotes with single
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
+      rows.push(matches);
     });
 
     return rows;
