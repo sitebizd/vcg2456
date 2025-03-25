@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business List</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 20px; color: #333; }
+    select { padding: 10px; margin: 10px; font-size: 1rem; }
+    ul { list-style-type: none; padding: 0; }
+    li { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background-color: #fff; 
+      padding: 15px; 
+      margin-bottom: 15px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+    }
+    li:hover { background-color: #f2f2f2; }
+    .info { flex-grow: 1; padding-right: 15px; }
+    .title { font-size: 1.2rem; font-weight: bold; color: #333; }
+    .subtitle { font-size: 0.9rem; color: #777; margin-top: 5px; }
+    .image { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 12px; 
+      overflow: hidden; 
+    }
+    .image img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+    }
+    .filters { 
+      margin-bottom: 15px; 
+      display: flex; 
+      gap: 10px; 
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Business List</h1>
+
+<div class="filters">
+  <select id="category1">
+    <option value="All">All Categories</option>
+  </select>
+  <select id="category2">
+    <option value="All">All Subcategories</option>
+  </select>
+</div>
+
+<ul id="businessList">
+  <!-- Business items will be listed here -->
+</ul>
+
+<script>
+  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
+  let businessData = [];
+
+  // Fetch and Parse CSV Data
+  async function fetchCSV() {
+    try {
+      const response = await fetch(SPREADSHEET_URL);
+      const data = await response.text();
+      businessData = parseCSV(data);
+      populateFilters();
+      renderList(businessData);
+      handleURLHash();
+    } catch (error) {
+      console.error("Error fetching CSV:", error);
+    }
+  }
+
+  // CSV Parsing Function
+  function parseCSV(text) {
+    const lines = text.trim().split("\n").slice(1); // Skip headers
+    const rows = [];
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
+
+    lines.forEach(line => {
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
+      // Map to our required field structure
+      const [profileID, businessName, businessAddress, category1, category2, image1] = matches;
+      if (profileID && businessName) { // Ensure essential data exists
+        rows.push({ profileID, businessName, businessAddress, category1, category2, image1 });
+      }
+    });
+    return rows;
+  }
+
+  // Populate Category Filters
+  function populateFilters() {
+    const category1Set = new Set();
+    const category2Set = new Set();
+
+    businessData.forEach(item => {
+      category1Set.add(item.category1);
+      category2Set.add(item.category2);
+    });
+
+    populateSelect(document.getElementById('category1'), Array.from(category1Set));
+    populateSelect(document.getElementById('category2'), Array.from(category2Set));
+  }
+
+  // Populate <select> Options
+  function populateSelect(select, options) {
+    select.innerHTML = `<option value="All">All</option>`;
+    options.filter(opt => opt).forEach(option => {
+      select.innerHTML += `<option value="${option}">${option}</option>`;
+    });
+  }
+
+  // Render Business List
+  function renderList(data) {
+    const businessList = document.getElementById('businessList');
+    businessList.innerHTML = '';
+
+    if (data.length === 0) {
+      businessList.innerHTML = '<p>No businesses found.</p>';
+      return;
+    }
+
+    data.forEach(item => {
+      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
+      const imageSrc = item.image1 ? item.image1 : 'default.jpg';
+      
+      businessList.innerHTML += `
+        <li onclick="location.href='${link}'">
+          <div class="info">
+            <div class="title">${item.businessName}</div>
+            <div class="subtitle">${item.businessAddress}</div>
+          </div>
+          <div class="image">
+            <img src="${imageSrc}" alt="${item.businessName}">
+          </div>
+        </li>
+      `;
+    });
+  }
+
+  // Filter by Category
+  function filterList() {
+    const category1 = document.getElementById('category1').value;
+    const category2 = document.getElementById('category2').value;
+    let filteredData = businessData;
+
+    if (category1 !== 'All') {
+      filteredData = filteredData.filter(item => item.category1 === category1);
+      window.location.hash = `#${category1}`;
+    }
+
+    if (category2 !== 'All') {
+      filteredData = filteredData.filter(item => item.category2 === category2);
+      window.location.hash = `#${category1}-${category2}`;
+    }
+
+    renderList(filteredData);
+  }
+
+  // Handle URL Hash for Direct Links
+  function handleURLHash() {
+    if (window.location.hash) {
+      const hash = window.location.hash.replace("#", "").split("-");
+      document.getElementById('category1').value = hash[0] || 'All';
+      document.getElementById('category2').value = hash[1] || 'All';
+      filterList();
+    }
+  }
+
+  // Event Listeners
+  document.getElementById('category1').addEventListener('change', filterList);
+  document.getElementById('category2').addEventListener('change', filterList);
+
+  // Initialize
+  fetchCSV();
+</script>
+
+</body>
+</html>
