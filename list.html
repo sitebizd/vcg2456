@@ -8,40 +8,37 @@
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
-    select { padding: 10px; margin: 10px; font-size: 1rem; }
-    .container { display: flex; flex-direction: column; gap: 15px; }
+    .container { width: 100%; margin: 0 auto; }
+    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; }
     .business-card { 
       display: flex; 
       align-items: center; 
+      padding: 10px; 
+      margin-bottom: 10px; 
       background-color: #fff; 
-      padding: 15px; 
       border-radius: 8px; 
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
       cursor: pointer; 
+      width: 100%;
       transition: background-color 0.3s; 
     }
     .business-card:hover { background-color: #f2f2f2; }
-    .info { flex-grow: 1; padding-left: 15px; }
-    .title { font-size: 1.2rem; font-weight: bold; color: #007bff; }
-    .subtitle { font-size: 0.9rem; color: #777; margin-top: 5px; }
     .image { 
-      width: 80px; 
-      height: 80px; 
-      border-radius: 12px; 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 8px; 
       overflow: hidden; 
+      margin-right: 15px; 
     }
     .image img { 
       width: 100%; 
       height: 100%; 
       object-fit: cover; 
     }
-    .filters { 
-      margin-bottom: 15px; 
-      display: flex; 
-      gap: 10px; 
-      justify-content: center;
-    }
-    .total { text-align: center; font-size: 1.1rem; margin-top: 10px; }
+    .info { flex-grow: 1; }
+    .title { font-size: 1rem; font-weight: bold; color: #0000FF; }
+    .subtitle { font-size: 0.8rem; color: #777; margin-top: 5px; }
+    .total-count { text-align: center; margin-top: 15px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -57,11 +54,11 @@
   </select>
 </div>
 
-<div class="total" id="totalCount"></div>
-
 <div class="container" id="businessContainer">
   <!-- Business items will be listed here -->
 </div>
+
+<p class="total-count" id="totalCount">Total Businesses: 0</p>
 
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
@@ -91,9 +88,7 @@
       while ((match = regex.exec(line))) {
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
-
       const [profileID, , businessName, , , businessAddress, , , , category1, category2, , , , , , , , image1] = matches;
-
       if (profileID && businessName) {
         rows.push({ profileID, businessName, businessAddress, category1, category2, image1 });
       }
@@ -124,11 +119,9 @@
   function renderList(data) {
     const container = document.getElementById('businessContainer');
     container.innerHTML = '';
-    document.getElementById('totalCount').textContent = `Total Businesses: ${data.length}`;
 
     if (data.length === 0) {
       container.innerHTML = '<p>No businesses found.</p>';
-      return;
     }
 
     data.forEach(item => {
@@ -138,15 +131,16 @@
       container.innerHTML += `
         <div class="business-card" onclick="location.href='${link}'">
           <div class="image">
-            <img src="${imageSrc}" alt="${item.image1}">
+            <img src="${imageSrc}" alt="${item.businessName}">
           </div>
           <div class="info">
             <div class="title">${item.businessName}</div>
             <div class="subtitle">${item.businessAddress}</div>
           </div>
-        </div>
-      `;
+        </div>`;
     });
+
+    document.getElementById('totalCount').textContent = `Total Businesses: ${data.length}`;
   }
 
   function filterList() {
@@ -162,7 +156,7 @@
 
   function handleURLHash() {
     if (window.location.hash) {
-      const [cat1, cat2] = window.location.hash.replace("#", "").split("-");
+      const [cat1, cat2] = window.location.hash.replace('#', '').split('-');
       document.getElementById('category1').value = cat1 || 'All';
       document.getElementById('category2').value = cat2 || 'All';
       filterList();
