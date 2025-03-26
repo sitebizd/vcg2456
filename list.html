@@ -92,18 +92,30 @@
       while ((match = regex.exec(line))) {
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
-      // Map to our required field structure based on correct columns
+      // Map to correct columns
       const [
-        profileID, // Column A
-        , , 
-        businessName, // Column C
-        , , 
-        businessAddress, // Column F
-        , , , 
-        category1, // Column J
-        category2, // Column K
-        , , , , , 
-        image1 // Column S
+        profileID,             // Column A
+        personName,            // Column B
+        businessName,          // Column C
+        businessNameEnglish,   // Column D
+        businessDescription,   // Column E
+        businessAddress,       // Column F
+        marketArea,            // Column G
+        paymentStatus,         // Column H
+        verifiedBadges,        // Column I
+        category1,             // Column J
+        category2,             // Column K
+        mobileNumber,          // Column L
+        whatsappNumber,        // Column M
+        website,               // Column N
+        facebookPage,          // Column O
+        youtubeChannel,        // Column P
+        instagram,             // Column Q
+        googleMap,             // Column R
+        image1,                // Column S
+        image2,                // Column T
+        image3,                // Column U
+        image4                 // Column V
       ] = matches;
 
       if (profileID && businessName) { // Ensure essential data exists
@@ -119,8 +131,8 @@
     const category2Set = new Set();
 
     businessData.forEach(item => {
-      category1Set.add(item.category1);
-      category2Set.add(item.category2);
+      if (item.category1) category1Set.add(item.category1);
+      if (item.category2) category2Set.add(item.category2);
     });
 
     populateSelect(document.getElementById('category1'), Array.from(category1Set));
@@ -156,7 +168,7 @@
             <div class="subtitle">${item.businessAddress}</div>
           </div>
           <div class="image">
-            <img src="${imageSrc}" alt="${item.image1}">
+            <img src="${imageSrc}" alt="${item.businessName}">
           </div>
         </li>
       `;
