@@ -13,7 +13,6 @@
     li { 
       display: flex; 
       align-items: center; 
-      justify-content: space-between; 
       background-color: #fff; 
       padding: 15px; 
       margin-bottom: 15px; 
@@ -23,7 +22,7 @@
       transition: background-color 0.3s; 
     }
     li:hover { background-color: #f2f2f2; }
-    .info { flex-grow: 1; padding-right: 15px; }
+    .info { flex-grow: 1; padding-left: 15px; }
     .title { font-size: 1.2rem; font-weight: bold; color: #0000FF; }
     .subtitle { font-size: 0.9rem; color: #777; margin-top: 5px; }
     .image { 
@@ -43,6 +42,12 @@
       gap: 10px; 
       justify-content: center;
     }
+    .total-count { 
+      text-align: center; 
+      font-size: 1rem; 
+      margin-bottom: 15px; 
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -57,6 +62,8 @@
     <option value="All">All Subcategories</option>
   </select>
 </div>
+
+<div class="total-count" id="totalCount">Total Businesses: 0</div>
 
 <ul id="businessList">
   <!-- Business items will be listed here -->
@@ -92,31 +99,7 @@
       while ((match = regex.exec(line))) {
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
-      // Map to correct columns
-      const [
-        profileID,             // Column A
-        personName,            // Column B
-        businessName,          // Column C
-        businessNameEnglish,   // Column D
-        businessDescription,   // Column E
-        businessAddress,       // Column F
-        marketArea,            // Column G
-        paymentStatus,         // Column H
-        verifiedBadges,        // Column I
-        category1,             // Column J
-        category2,             // Column K
-        mobileNumber,          // Column L
-        whatsappNumber,        // Column M
-        website,               // Column N
-        facebookPage,          // Column O
-        youtubeChannel,        // Column P
-        instagram,             // Column Q
-        googleMap,             // Column R
-        image1,                // Column S
-        image2,                // Column T
-        image3,                // Column U
-        image4                 // Column V
-      ] = matches;
+      const [profileID, , businessName, , , businessAddress, , , , category1, category2, , , , , , , , image1] = matches;
 
       if (profileID && businessName) { // Ensure essential data exists
         rows.push({ profileID, businessName, businessAddress, category1, category2, image1 });
@@ -150,25 +133,29 @@
   // Render Business List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
+    const totalCount = document.getElementById('totalCount');
     businessList.innerHTML = '';
 
     if (data.length === 0) {
       businessList.innerHTML = '<p>No businesses found.</p>';
+      totalCount.textContent = 'Total Businesses: 0';
       return;
     }
+
+    totalCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
       const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
       const imageSrc = item.image1 ? item.image1 : 'default.jpg';
-      
+
       businessList.innerHTML += `
         <li onclick="location.href='${link}'">
+          <div class="image">
+            <img src="${imageSrc}" alt="${item.image1}">
+          </div>
           <div class="info">
             <div class="title">${item.businessName}</div>
             <div class="subtitle">${item.businessAddress}</div>
-          </div>
-          <div class="image">
-            <img src="${imageSrc}" alt="${item.image1}">
           </div>
         </li>
       `;
