@@ -11,7 +11,7 @@
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
     .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; }
-    select { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; width: 200px; }
+    select { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; min-width: 150px; }
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -21,17 +21,14 @@
       margin-bottom: 15px; 
       border-radius: 8px; 
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
       width: 100%;
-      overflow: hidden;
     }
-    .info { flex-grow: 1; padding-right: 15px; overflow: hidden; }
-    .title, .subtitle { 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-    }
-    .title { font-size: 1rem; font-weight: bold; color: #0000FF; }
-    .subtitle { font-size: 0.8rem; color: #777; margin-top: 5px; }
+    .business-card:hover { background-color: #f2f2f2; }
+    .info { flex-grow: 1; padding-right: 15px; overflow-y: auto; max-height: 80px; }
+    .title { font-size: 1rem; font-weight: bold; color: #0000FF; overflow-y: auto; max-height: 40px; }
+    .subtitle { font-size: 0.8rem; color: #777; margin-top: 5px; overflow-y: auto; max-height: 40px; }
     .image { 
       width: 60px; 
       height: 60px; 
@@ -54,7 +51,7 @@
       justify-content: center;
     }
     .phone-icon i { color: #fff; font-size: 20px; }
-    #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
+    .total-count { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -71,8 +68,10 @@
     </select>
   </div>
 
-  <div id="businessCount"></div>
-  <div id="businessList"></div>
+  <div id="businessList">
+    <!-- Business cards will be listed here -->
+  </div>
+  <div class="total-count" id="totalCount"></div>
 </div>
 
 <script>
@@ -95,22 +94,12 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
-    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const matches = [];
-      let match;
-      while ((match = regex.exec(line))) {
-        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
-      }
-      const [
-        profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress,
-        marketArea, paymentStatus, verifiedBadges, category1, category2, mobileNumber, whatsappNumber,
-        website, facebookPage, youtubeChannel, instagram, googleMap, image1, image2, image3, image4
-      ] = matches;
-
+      const columns = line.split(",").map(col => col.trim());
+      const [profileID, businessName, businessAddress, category1, category2, mobileNumber, image1] = columns;
       if (profileID && businessName) {
-        rows.push({ profileID, businessName, businessAddress, category1, category2, image1, mobileNumber });
+        rows.push({ profileID, businessName, businessAddress, category1, category2, mobileNumber, image1 });
       }
     });
     return rows;
@@ -131,45 +120,39 @@
 
   function populateSelect(select, options) {
     select.innerHTML = `<option value="All">All</option>`;
-    options.filter(opt => opt).forEach(option => {
+    options.forEach(option => {
       select.innerHTML += `<option value="${option}">${option}</option>`;
     });
   }
 
   function renderList(data) {
     const businessList = document.getElementById('businessList');
-    const businessCount = document.getElementById('businessCount');
     businessList.innerHTML = '';
 
     if (data.length === 0) {
       businessList.innerHTML = '<p>No businesses found.</p>';
-      businessCount.textContent = `Total Businesses: 0`;
-      return;
+    } else {
+      document.getElementById('totalCount').textContent = `Total Businesses: ${data.length}`;
+      data.forEach(item => {
+        const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
+        const imageSrc = item.image1 || 'default.jpg';
+        businessList.innerHTML += `
+          <a href="${link}" class="business-card">
+            <div style="display: flex; align-items: center;">
+              <div class="image">
+                <img src="${imageSrc}" alt="${item.businessName}">
+              </div>
+              <div class="info">
+                <div class="title">${item.businessName}</div>
+                <div class="subtitle">${item.businessAddress}</div>
+              </div>
+            </div>
+            <a href="tel:${item.mobileNumber}" class="phone-icon">
+              <i class="fas fa-phone"></i>
+            </a>
+          </a>`;
+      });
     }
-
-    businessCount.textContent = `Total Businesses: ${data.length}`;
-
-    data.forEach(item => {
-      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
-      const imageSrc = item.image1 ? item.image1 : 'default.jpg';
-
-      businessList.innerHTML += `
-        <div class="business-card">
-          <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image">
-              <img src="${imageSrc}" alt="${item.businessName}">
-            </div>
-            <div class="info">
-              <div class="title">${item.businessName}</div>
-              <div class="subtitle">${item.businessAddress}</div>
-            </div>
-          </a>
-          <a href="tel:${item.mobileNumber}" class="phone-icon">
-            <i class="fas fa-phone"></i>
-          </a>
-        </div>
-      `;
-    });
   }
 
   document.getElementById('category1').addEventListener('change', filterList);
@@ -180,24 +163,10 @@
     const category2 = document.getElementById('category2').value;
     let filteredData = businessData;
 
-    if (category1 !== 'All') {
-      filteredData = filteredData.filter(item => item.category1 === category1);
-    }
-
-    if (category2 !== 'All') {
-      filteredData = filteredData.filter(item => item.category2 === category2);
-    }
+    if (category1 !== 'All') filteredData = filteredData.filter(item => item.category1 === category1);
+    if (category2 !== 'All') filteredData = filteredData.filter(item => item.category2 === category2);
 
     renderList(filteredData);
-  }
-
-  function handleURLHash() {
-    if (window.location.hash) {
-      const hash = window.location.hash.replace("#", "").split("-");
-      document.getElementById('category1').value = hash[0] || 'All';
-      document.getElementById('category2').value = hash[1] || 'All';
-      filterList();
-    }
   }
 
   fetchCSV();
