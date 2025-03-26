@@ -24,7 +24,7 @@
     }
     li:hover { background-color: #f2f2f2; }
     .info { flex-grow: 1; padding-right: 15px; }
-    .title { font-size: 1.2rem; font-weight: bold; color: #333; }
+    .title { font-size: 1.2rem; font-weight: bold; color: #0000FF; }
     .subtitle { font-size: 0.9rem; color: #777; margin-top: 5px; }
     .image { 
       width: 80px; 
@@ -94,13 +94,16 @@
       }
       // Map to our required field structure based on correct columns
       const [
-        profileID, , , , , , , , , 
+        profileID, // Column A
+        , , 
+        businessName, // Column C
+        , , 
+        businessAddress, // Column F
+        , , , 
         category1, // Column J
         category2, // Column K
-        , , , , , , , , , 
-        businessName, // Column B
-        businessAddress, // Column C
-        image1 // Column U
+        , , , , , 
+        image1 // Column S
       ] = matches;
 
       if (profileID && businessName) { // Ensure essential data exists
