@@ -11,7 +11,7 @@
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
     .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; }
-    select { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; }
+    select { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; width: 200px; }
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -21,12 +21,15 @@
       margin-bottom: 15px; 
       border-radius: 8px; 
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-      cursor: pointer; 
-      transition: background-color 0.3s; 
       width: 100%;
+      overflow: hidden;
     }
-    .business-card:hover { background-color: #f2f2f2; }
-    .info { flex-grow: 1; padding-right: 15px; }
+    .info { flex-grow: 1; padding-right: 15px; overflow: hidden; }
+    .title, .subtitle { 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
     .title { font-size: 1rem; font-weight: bold; color: #0000FF; }
     .subtitle { font-size: 0.8rem; color: #777; margin-top: 5px; }
     .image { 
@@ -51,6 +54,7 @@
       justify-content: center;
     }
     .phone-icon i { color: #fff; font-size: 20px; }
+    #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -67,9 +71,8 @@
     </select>
   </div>
 
-  <div id="businessList">
-    <!-- Business cards will be listed here -->
-  </div>
+  <div id="businessCount"></div>
+  <div id="businessList"></div>
 </div>
 
 <script>
@@ -135,19 +138,24 @@
 
   function renderList(data) {
     const businessList = document.getElementById('businessList');
+    const businessCount = document.getElementById('businessCount');
     businessList.innerHTML = '';
 
     if (data.length === 0) {
       businessList.innerHTML = '<p>No businesses found.</p>';
+      businessCount.textContent = `Total Businesses: 0`;
       return;
     }
+
+    businessCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
       const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
       const imageSrc = item.image1 ? item.image1 : 'default.jpg';
+
       businessList.innerHTML += `
         <div class="business-card">
-          <div style="display: flex; align-items: center;">
+          <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
             <div class="image">
               <img src="${imageSrc}" alt="${item.businessName}">
             </div>
@@ -155,7 +163,7 @@
               <div class="title">${item.businessName}</div>
               <div class="subtitle">${item.businessAddress}</div>
             </div>
-          </div>
+          </a>
           <a href="tel:${item.mobileNumber}" class="phone-icon">
             <i class="fas fa-phone"></i>
           </a>
