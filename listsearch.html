@@ -10,46 +10,9 @@
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
-
-    /* Search Bar */
-    .search-container {
-      position: relative;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-    .search-input {
-      width: 100%;
-      padding: 12px 40px 12px 15px;
-      border: 2px solid #ddd;
-      border-radius: 25px;
-      font-size: 1rem;
-    }
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #777;
-      font-size: 1.2rem;
-    }
-
-    /* Filters */
-    .filters { 
-      margin-bottom: 15px; 
-      display: flex; 
-      gap: 10px; 
-      justify-content: center; 
-    }
-    select { 
-      padding: 15px; 
-      font-size: 1rem; 
-      border-radius: 8px; 
-      border: 2px solid #ddd; 
-      background-color: #fff; 
-      width: 200px; 
-    }
-
-    /* Business Card */
+    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    select, input { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; }
+    input { width: 300px; }
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -65,35 +28,31 @@
     .info { 
       flex-grow: 1; 
       padding-right: 15px; 
-      overflow: hidden;
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column;
     }
-    .title, .subtitle, .person-name { 
-      white-space: normal;
-      overflow-wrap: break-word;
+    .title, .subtitle, .person { 
+      white-space: normal; 
+      overflow: hidden;
+      text-overflow: ellipsis;
       word-break: break-word;
     }
     .title { 
       font-size: 1rem; 
       font-weight: bold; 
       color: #0000FF;
+      margin-bottom: 5px;
     }
-    .person-name { 
-      font-size: 0.9rem; 
-      font-weight: bold; 
-      color: #333; 
-      margin-top: 5px;
-    }
-    .subtitle { 
-      font-size: 0.8rem; 
-      color: #777; 
-      margin-top: 5px;
-    }
+    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
+    .subtitle { font-size: 0.8rem; color: #777; }
     .image { 
       width: 60px; 
       height: 60px; 
       border-radius: 8px; 
       overflow: hidden; 
       margin-right: 15px;
+      flex-shrink: 0;
     }
     .image img { 
       width: 100%; 
@@ -108,16 +67,10 @@
       display: flex; 
       align-items: center; 
       justify-content: center;
+      flex-shrink: 0;
     }
-    .phone-icon i { 
-      color: #fff; 
-      font-size: 20px; 
-    }
-    #businessCount { 
-      text-align: center; 
-      margin-top: 10px; 
-      font-weight: bold;
-    }
+    .phone-icon i { color: #fff; font-size: 20px; }
+    #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -125,20 +78,13 @@
 <h1>Business List</h1>
 
 <div class="container">
-
-  <!-- Search Bar -->
-  <div class="search-container">
-    <input type="text" id="searchInput" class="search-input" placeholder="Search by Business or Person Name">
-    <i class="fas fa-search search-icon"></i>
-  </div>
-
-  <!-- Filters -->
   <div class="filters">
+    <input type="text" id="searchInput" placeholder="Search by Business or Person">
     <select id="category1">
       <option value="All">All Categories</option>
     </select>
     <select id="category2">
-      <option value="All Subcategories</option>
+      <option value="All">All Subcategories</option>
     </select>
   </div>
 
@@ -149,6 +95,7 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
+  let filteredData = [];
 
   // Fetch CSV Data
   async function fetchCSV() {
@@ -156,6 +103,7 @@
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
+      filteredData = businessData;
       populateFilters();
       renderList(businessData);
     } catch (error) {
@@ -167,26 +115,27 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const values = line.split(",");
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
+      
+      // Map to correct columns
       const [
-        profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress,
-        marketArea, paymentStatus, verifiedBadges, category1, category2, mobileNumber, whatsappNumber,
-        website, facebookPage, youtubeChannel, instagram, googleMap, image1, image2, image3, image4
-      ] = values.map(v => v.trim());
+        profileID, personName, businessName, businessNameEnglish,
+        businessDescription, businessAddress, marketArea,
+        paymentStatus, verifiedBadges, category1,
+        category2, mobileNumber, whatsappNumber,
+        website, facebookPage, youtubeChannel,
+        instagram, googleMap, image1, image2, image3, image4
+      ] = matches;
 
       if (profileID && businessName) {
-        rows.push({ 
-          profileID, 
-          personName, 
-          businessName, 
-          businessAddress, 
-          category1,             // Column J
-          category2,             // Column K
-          mobileNumber,          // Column L
-          image1                 // Column S
-        });
+        rows.push({ profileID, personName, businessName, businessAddress, category1, category2, image1, mobileNumber });
       }
     });
     return rows;
@@ -208,49 +157,69 @@
 
   function populateSelect(select, options) {
     select.innerHTML = `<option value="All">All</option>`;
-    options.forEach(option => {
-      if (option) {
-        select.innerHTML += `<option value="${option}">${option}</option>`;
-      }
+    options.filter(opt => opt).forEach(option => {
+      select.innerHTML += `<option value="${option}">${option}</option>`;
     });
   }
 
-  // Render Business List
+  // Render List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
     const businessCount = document.getElementById('businessCount');
     businessList.innerHTML = '';
 
+    if (data.length === 0) {
+      businessList.innerHTML = '<p>No businesses found.</p>';
+      businessCount.textContent = `Total Businesses: 0`;
+      return;
+    }
+
     businessCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
       const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
-      const imageSrc = item.image1 || 'default.jpg';
+      const imageSrc = item.image1 ? item.image1 : 'default.jpg';
 
       businessList.innerHTML += `
         <div class="business-card">
           <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image"><img src="${imageSrc}" alt="${item.image1}"></div>
+            <div class="image">
+              <img src="${imageSrc}" alt="${item.image1}">
+            </div>
             <div class="info">
               <div class="title">${item.businessName}</div>
-              <div class="person-name">${item.personName}</div>
+              <div class="person">👤 ${item.personName}</div>
               <div class="subtitle">${item.businessAddress}</div>
             </div>
           </a>
-          <a href="tel:${item.mobileNumber}" class="phone-icon"><i class="fas fa-phone"></i></a>
+          <a href="tel:${item.mobileNumber}" class="phone-icon">
+            <i class="fas fa-phone"></i>
+          </a>
         </div>
       `;
     });
   }
 
-  document.getElementById('searchInput').addEventListener('input', function() {
-    const searchValue = this.value.toLowerCase();
-    const filteredData = businessData.filter(item => 
-      item.businessName.toLowerCase().includes(searchValue) ||
-      item.personName.toLowerCase().includes(searchValue)
-    );
+  // Event Listeners
+  document.getElementById('category1').addEventListener('change', filterList);
+  document.getElementById('category2').addEventListener('change', filterList);
+  document.getElementById('searchInput').addEventListener('input', filterList);
+
+  function filterList() {
+    const category1 = document.getElementById('category1').value;
+    const category2 = document.getElementById('category2').value;
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+    filteredData = businessData.filter(item => {
+      return (
+        (category1 === 'All' || item.category1 === category1) &&
+        (category2 === 'All' || item.category2 === category2) &&
+        (item.businessName.toLowerCase().includes(searchQuery) || 
+         item.personName.toLowerCase().includes(searchQuery))
+      );
+    });
     renderList(filteredData);
-  });
+  }
 
   fetchCSV();
 </script>
