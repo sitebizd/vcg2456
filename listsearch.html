@@ -215,7 +215,8 @@
         (category1 === 'All' || item.category1 === category1) &&
         (category2 === 'All' || item.category2 === category2) &&
         (item.businessName.toLowerCase().includes(searchQuery) || 
-         item.personName.toLowerCase().includes(searchQuery))
+         item.personName.toLowerCase().includes(searchQuery)
+		 item.businessAddress.toLowerCase().includes(searchQuery))
       );
     });
     renderList(filteredData);
