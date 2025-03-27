@@ -11,32 +11,26 @@
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
 
-    /* Search Box */
-    .search-container { 
-      display: flex; 
-      justify-content: center; 
-      margin-bottom: 15px; 
-      position: relative; 
+    /* Search Bar */
+    .search-container {
+      position: relative;
       width: 100%;
+      margin-bottom: 15px;
     }
-    .search-box {
+    .search-input {
       width: 100%;
-      padding: 15px 20px 15px 45px;
-      font-size: 1.2rem;
+      padding: 12px 40px 12px 15px;
       border: 2px solid #ddd;
       border-radius: 25px;
-      outline: none;
-      background-color: #fff;
-      transition: all 0.3s ease;
+      font-size: 1rem;
     }
-    .search-box:focus { border-color: #0000FF; }
     .search-icon {
       position: absolute;
-      left: 15px;
+      right: 15px;
       top: 50%;
       transform: translateY(-50%);
-      color: #aaa;
-      font-size: 1.4rem;
+      color: #777;
+      font-size: 1.2rem;
     }
 
     /* Filters */
@@ -48,7 +42,7 @@
     }
     select { 
       padding: 15px; 
-      font-size: 1.2rem; 
+      font-size: 1rem; 
       border-radius: 8px; 
       border: 2px solid #ddd; 
       background-color: #fff; 
@@ -71,31 +65,28 @@
     .info { 
       flex-grow: 1; 
       padding-right: 15px; 
-      overflow: hidden; 
-      display: flex; 
-      flex-direction: column;
-    }
-    .title, .subtitle, .person { 
-      white-space: normal; 
       overflow: hidden;
-      text-overflow: ellipsis;
+    }
+    .title, .subtitle, .person-name { 
+      white-space: normal;
+      overflow-wrap: break-word;
       word-break: break-word;
     }
     .title { 
       font-size: 1rem; 
       font-weight: bold; 
       color: #0000FF;
-      margin-bottom: 5px;
     }
-    .person {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #555;
-      margin-bottom: 5px;
+    .person-name { 
+      font-size: 0.9rem; 
+      font-weight: bold; 
+      color: #333; 
+      margin-top: 5px;
     }
     .subtitle { 
       font-size: 0.8rem; 
-      color: #777;
+      color: #777; 
+      margin-top: 5px;
     }
     .image { 
       width: 60px; 
@@ -103,7 +94,6 @@
       border-radius: 8px; 
       overflow: hidden; 
       margin-right: 15px;
-      flex-shrink: 0;
     }
     .image img { 
       width: 100%; 
@@ -118,11 +108,16 @@
       display: flex; 
       align-items: center; 
       justify-content: center;
-      flex-shrink: 0;
     }
-    .phone-icon i { color: #fff; font-size: 20px; }
-    
-    #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
+    .phone-icon i { 
+      color: #fff; 
+      font-size: 20px; 
+    }
+    #businessCount { 
+      text-align: center; 
+      margin-top: 10px; 
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -130,13 +125,14 @@
 <h1>Business List</h1>
 
 <div class="container">
-  <!-- Search Box -->
+
+  <!-- Search Bar -->
   <div class="search-container">
-    <input type="text" id="searchBox" class="search-box" placeholder="Search by Business Name or Person Name">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search by Business or Person Name">
     <i class="fas fa-search search-icon"></i>
   </div>
 
-  <!-- Category Filters -->
+  <!-- Filters -->
   <div class="filters">
     <select id="category1">
       <option value="All">All Categories</option>
@@ -162,6 +158,7 @@
       businessData = parseCSV(data);
       populateFilters();
       renderList(businessData);
+      handleURLHash();
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
@@ -171,21 +168,25 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
+
     lines.forEach(line => {
-      const cols = line.split(',');
+      const values = line.split(",");
       const [
-        profileID, personName, businessName, businessNameEnglish, businessDescription,
-        businessAddress, marketArea, paymentStatus, verifiedBadges, category1,
-        category2, mobileNumber, whatsappNumber, website, facebookPage,
-        youtubeChannel, instagram, googleMap, image1, image2, image3, image4
-      ] = cols;
+        profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress,
+        marketArea, paymentStatus, verifiedBadges, category1, category2, mobileNumber, whatsappNumber,
+        website, facebookPage, youtubeChannel, instagram, googleMap, image1, image2, image3, image4
+      ] = values.map(v => v.trim());
 
       if (profileID && businessName) {
         rows.push({ 
-          profileID, personName, businessName, businessNameEnglish, businessDescription,
-          businessAddress, marketArea, paymentStatus, verifiedBadges, category1,
-          category2, mobileNumber, whatsappNumber, website, facebookPage,
-          youtubeChannel, instagram, googleMap, image1
+          profileID, 
+          personName, 
+          businessName, 
+          businessAddress, 
+          category1, 
+          category2, 
+          image1, 
+          mobileNumber 
         });
       }
     });
@@ -208,27 +209,23 @@
 
   function populateSelect(select, options) {
     select.innerHTML = `<option value="All">All</option>`;
-    options.filter(opt => opt).forEach(option => {
-      select.innerHTML += `<option value="${option}">${option}</option>`;
+    options.forEach(option => {
+      if (option) {
+        select.innerHTML += `<option value="${option}">${option}</option>`;
+      }
     });
   }
 
-  // Render List
+  // Render Business List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
     const businessCount = document.getElementById('businessCount');
     businessList.innerHTML = '';
 
-    if (data.length === 0) {
-      businessList.innerHTML = '<p>No businesses found.</p>';
-      businessCount.textContent = `Total Businesses: 0`;
-      return;
-    }
-
     businessCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
-      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
+      const link = `https://example.com/${item.profileID}`;
       const imageSrc = item.image1 || 'default.jpg';
 
       businessList.innerHTML += `
@@ -237,7 +234,7 @@
             <div class="image"><img src="${imageSrc}" alt="${item.image1}"></div>
             <div class="info">
               <div class="title">${item.businessName}</div>
-              <div class="person">👤 ${item.personName}</div>
+              <div class="person-name">${item.personName}</div>
               <div class="subtitle">${item.businessAddress}</div>
             </div>
           </a>
@@ -247,13 +244,13 @@
     });
   }
 
-  document.getElementById('searchBox').addEventListener('input', function() {
-    const keyword = this.value.toLowerCase();
-    const filtered = businessData.filter(item => 
-      item.businessName.toLowerCase().includes(keyword) || 
-      item.personName.toLowerCase().includes(keyword)
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const searchValue = this.value.toLowerCase();
+    const filteredData = businessData.filter(item => 
+      item.businessName.toLowerCase().includes(searchValue) ||
+      item.personName.toLowerCase().includes(searchValue)
     );
-    renderList(filtered);
+    renderList(filteredData);
   });
 
   fetchCSV();
