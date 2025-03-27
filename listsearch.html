@@ -10,36 +10,36 @@
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
-    
+
     /* Search Box */
     .search-container { 
       display: flex; 
       justify-content: center; 
       margin-bottom: 15px; 
-      position: relative;
+      position: relative; 
+      width: 100%;
     }
     .search-box {
-      width: 80%;
-      max-width: 500px;
-      padding: 15px 20px;
+      width: 100%;
+      padding: 15px 20px 15px 45px;
       font-size: 1.2rem;
       border: 2px solid #ddd;
       border-radius: 25px;
       outline: none;
-      padding-left: 45px;
       background-color: #fff;
       transition: all 0.3s ease;
     }
     .search-box:focus { border-color: #0000FF; }
     .search-icon {
       position: absolute;
-      left: 20px;
+      left: 15px;
       top: 50%;
       transform: translateY(-50%);
       color: #aaa;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
     }
-    
+
+    /* Filters */
     .filters { 
       margin-bottom: 15px; 
       display: flex; 
@@ -55,6 +55,7 @@
       width: 200px; 
     }
 
+    /* Business Card */
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -67,7 +68,6 @@
       width: 100%;
       overflow: hidden;
     }
-    
     .info { 
       flex-grow: 1; 
       padding-right: 15px; 
@@ -75,33 +75,28 @@
       display: flex; 
       flex-direction: column;
     }
-    
     .title, .subtitle, .person { 
       white-space: normal; 
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-word;
     }
-    
     .title { 
       font-size: 1rem; 
       font-weight: bold; 
       color: #0000FF;
       margin-bottom: 5px;
     }
-    
     .person {
       font-size: 0.9rem;
       font-weight: 500;
       color: #555;
       margin-bottom: 5px;
     }
-    
     .subtitle { 
       font-size: 0.8rem; 
       color: #777;
     }
-    
     .image { 
       width: 60px; 
       height: 60px; 
@@ -110,13 +105,11 @@
       margin-right: 15px;
       flex-shrink: 0;
     }
-    
     .image img { 
       width: 100%; 
       height: 100%; 
       object-fit: cover; 
     }
-    
     .phone-icon {
       width: 40px; 
       height: 40px; 
@@ -127,7 +120,6 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    
     .phone-icon i { color: #fff; font-size: 20px; }
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
@@ -182,13 +174,19 @@
     lines.forEach(line => {
       const cols = line.split(',');
       const [
-        profileID, personName, businessName, , , businessAddress,
-        , , , category1, category2, mobileNumber, 
-        , , , , , image1
+        profileID, personName, businessName, businessNameEnglish, businessDescription,
+        businessAddress, marketArea, paymentStatus, verifiedBadges, category1,
+        category2, mobileNumber, whatsappNumber, website, facebookPage,
+        youtubeChannel, instagram, googleMap, image1, image2, image3, image4
       ] = cols;
 
       if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessAddress, category1, category2, image1, mobileNumber });
+        rows.push({ 
+          profileID, personName, businessName, businessNameEnglish, businessDescription,
+          businessAddress, marketArea, paymentStatus, verifiedBadges, category1,
+          category2, mobileNumber, whatsappNumber, website, facebookPage,
+          youtubeChannel, instagram, googleMap, image1
+        });
       }
     });
     return rows;
@@ -236,18 +234,14 @@
       businessList.innerHTML += `
         <div class="business-card">
           <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image">
-              <img src="${imageSrc}" alt="${item.image1}">
-            </div>
+            <div class="image"><img src="${imageSrc}" alt="${item.image1}"></div>
             <div class="info">
               <div class="title">${item.businessName}</div>
               <div class="person">👤 ${item.personName}</div>
               <div class="subtitle">${item.businessAddress}</div>
             </div>
           </a>
-          <a href="tel:${item.mobileNumber}" class="phone-icon">
-            <i class="fas fa-phone"></i>
-          </a>
+          <a href="tel:${item.mobileNumber}" class="phone-icon"><i class="fas fa-phone"></i></a>
         </div>
       `;
     });
