@@ -138,7 +138,7 @@
       <option value="All">All Categories</option>
     </select>
     <select id="category2">
-      <option value="All">All Subcategories</option>
+      <option value="All Subcategories</option>
     </select>
   </div>
 
@@ -158,7 +158,6 @@
       businessData = parseCSV(data);
       populateFilters();
       renderList(businessData);
-      handleURLHash();
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
@@ -183,10 +182,10 @@
           personName, 
           businessName, 
           businessAddress, 
-          category1, 
-          category2, 
-          image1, 
-          mobileNumber 
+          category1,             // Column J
+          category2,             // Column K
+          mobileNumber,          // Column L
+          image1                 // Column S
         });
       }
     });
@@ -225,7 +224,7 @@
     businessCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
-      const link = `https://example.com/${item.profileID}`;
+      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
       const imageSrc = item.image1 || 'default.jpg';
 
       businessList.innerHTML += `
