@@ -146,22 +146,16 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
-    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const matches = [];
-      let match;
-      while ((match = regex.exec(line))) {
-        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
-      }
-      
+      const cells = line.split(',');
       const [
         profileID, personName, businessName, businessNameEnglish,
         businessDescription, businessAddress, marketArea, paymentStatus,
         verifiedBadges, category1, category2, mobileNumber, whatsappNumber,
         website, facebookPage, youtubeChannel, instagram, googleMap,
-        image1, image2, image3, image4
-      ] = matches;
+        image1
+      ] = cells;
 
       if (profileID && businessName) {
         rows.push({ 
@@ -180,12 +174,12 @@
     const category2Set = new Set();
 
     businessData.forEach(item => {
-      if (item.category1) category1Set.add(item.category1);
-      if (item.category2) category2Set.add(item.category2);
+      if (item.category1) category1Set.add(item.category1.trim());
+      if (item.category2) category2Set.add(item.category2.trim());
     });
 
-    populateSelect(document.getElementById('category1'), Array.from(category1Set));
-    populateSelect(document.getElementById('category2'), Array.from(category2Set));
+    populateSelect(document.getElementById('category1'), category1Set);
+    populateSelect(document.getElementById('category2'), category2Set);
   }
 
   function populateSelect(select, options) {
@@ -227,19 +221,31 @@
               <div class="subtitle">${item.businessAddress}</div>
             </div>
           </a>
+          <a href="tel:${item.mobileNumber}" class="phone-icon">
+            <i class="fas fa-phone"></i>
+          </a>
         </div>
       `;
     });
   }
 
-  // Search & Filter Function
-  document.getElementById('searchInput').addEventListener('input', () => {
+  // Filter Functionality
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('category1').addEventListener('change', applyFilters);
+  document.getElementById('category2').addEventListener('change', applyFilters);
+
+  function applyFilters() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    const filteredData = businessData.filter(item =>
+    const category1 = document.getElementById('category1').value;
+    const category2 = document.getElementById('category2').value;
+
+    const filtered = businessData.filter(item =>
+      (category1 === 'All' || item.category1 === category1) &&
+      (category2 === 'All' || item.category2 === category2) &&
       Object.values(item).some(value => value && value.toLowerCase().includes(query))
     );
-    renderList(filteredData);
-  });
+    renderList(filtered);
+  }
 
   fetchCSV();
 </script>
