@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html>
 <head>
   <meta charset="UTF-8">
@@ -10,24 +10,11 @@
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
+    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    input, select { padding: 10px; font-size: 1rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; }
+    input { width: 300px; }
+    select { width: 200px; }
 
-    .filters { 
-      margin-bottom: 15px; 
-      display: flex; 
-      gap: 10px; 
-      justify-content: center; 
-      flex-wrap: wrap;
-    }
-    
-    select, input { 
-      padding: 15px; 
-      font-size: 1.2rem; 
-      border-radius: 8px; 
-      border: 2px solid #ddd; 
-      background-color: #fff; 
-      width: 200px; 
-    }
-    
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -111,8 +98,9 @@
 <h1>Business List</h1>
 
 <div class="container">
+  <input type="text" id="searchInput" placeholder="Search by Name, Description, Address...">
+  
   <div class="filters">
-    <input type="text" id="searchInput" placeholder="🔍 Search by name, address..." />
     <select id="category1">
       <option value="All">All Categories</option>
     </select>
@@ -128,6 +116,7 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
+  let filteredData = [];
 
   // Fetch CSV Data
   async function fetchCSV() {
@@ -135,8 +124,9 @@
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
+      filteredData = [...businessData];
       populateFilters();
-      renderList(businessData);
+      renderList(filteredData);
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
@@ -146,23 +136,19 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const cells = line.split(',');
-      const [
-        profileID, personName, businessName, businessNameEnglish,
-        businessDescription, businessAddress, marketArea, paymentStatus,
-        verifiedBadges, category1, category2, mobileNumber, whatsappNumber,
-        website, facebookPage, youtubeChannel, instagram, googleMap,
-        image1
-      ] = cells;
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
+      
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, paymentStatus, verifiedBadges, category1, category2, mobileNumber, image1] = matches;
 
       if (profileID && businessName) {
-        rows.push({ 
-          profileID, personName, businessName, businessNameEnglish,
-          businessDescription, businessAddress, category1, category2,
-          image1, mobileNumber 
-        });
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category1, category2, mobileNumber, image1 });
       }
     });
     return rows;
@@ -174,20 +160,18 @@
     const category2Set = new Set();
 
     businessData.forEach(item => {
-      if (item.category1) category1Set.add(item.category1.trim());
-      if (item.category2) category2Set.add(item.category2.trim());
+      if (item.category1) category1Set.add(item.category1);
+      if (item.category2) category2Set.add(item.category2);
     });
 
-    populateSelect(document.getElementById('category1'), category1Set);
-    populateSelect(document.getElementById('category2'), category2Set);
+    populateSelect(document.getElementById('category1'), Array.from(category1Set));
+    populateSelect(document.getElementById('category2'), Array.from(category2Set));
   }
 
   function populateSelect(select, options) {
     select.innerHTML = `<option value="All">All</option>`;
-    options.forEach(option => {
-      if (option) {
-        select.innerHTML += `<option value="${option}">${option}</option>`;
-      }
+    options.filter(opt => opt).forEach(option => {
+      select.innerHTML += `<option value="${option}">${option}</option>`;
     });
   }
 
@@ -229,23 +213,17 @@
     });
   }
 
-  // Filter Functionality
-  document.getElementById('searchInput').addEventListener('input', applyFilters);
-  document.getElementById('category1').addEventListener('change', applyFilters);
-  document.getElementById('category2').addEventListener('change', applyFilters);
-
-  function applyFilters() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const category1 = document.getElementById('category1').value;
-    const category2 = document.getElementById('category2').value;
-
-    const filtered = businessData.filter(item =>
-      (category1 === 'All' || item.category1 === category1) &&
-      (category2 === 'All' || item.category2 === category2) &&
-      Object.values(item).some(value => value && value.toLowerCase().includes(query))
+  // Filter by Search Input
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const searchText = this.value.toLowerCase();
+    filteredData = businessData.filter(item => 
+      item.businessName.toLowerCase().includes(searchText) || 
+      item.businessNameEnglish.toLowerCase().includes(searchText) ||
+      item.businessDescription.toLowerCase().includes(searchText) ||
+      item.businessAddress.toLowerCase().includes(searchText)
     );
-    renderList(filtered);
-  }
+    renderList(filteredData);
+  });
 
   fetchCSV();
 </script>
