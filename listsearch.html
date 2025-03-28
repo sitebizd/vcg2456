@@ -251,35 +251,30 @@
   document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
     const category1 = document.getElementById('category1').value;
     const category2 = document.getElementById('category2').value;
 
-    function searchBusiness() {
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-  if (!searchTerm) {
-    renderList(businessData);
-    return;
-  }
+    if (!searchTerm) {
+        renderList(businessData);
+        return;
+    }
 
-  let filteredData = businessData.filter(item => {
-    const fields = [
-      item.businessName,
-      item.personName,
-      item.businessNameEnglish,
-      item.businessDescription,
-      item.businessAddress
-    ].join(' ').toLowerCase().split(/\s+/); // Split by spaces for exact word match
+    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i'); // Match whole words
 
-    return fields.includes(searchTerm) &&
-      (category1 === 'All' || item.category1 === category1) &&
-      (category2 === 'All' || item.category2 === category2);
-  });
+    let filteredData = businessData.filter(item => 
+        (item.personName.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
+         item.businessName.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
+         item.businessNameEnglish.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
+         item.businessDescription.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
+         item.businessAddress.toLowerCase().split(/\s+/).some(word => searchPattern.test(word))) &&
+        (category1 === 'All' || item.category1 === category1) &&
+        (category2 === 'All' || item.category2 === category2)
+    );
 
-  renderList(filteredData);
+    renderList(filteredData);
 }
 
-  }
 
   fetchCSV();
 </script>
