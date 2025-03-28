@@ -255,17 +255,16 @@
     const category1 = document.getElementById('category1').value;
     const category2 = document.getElementById('category2').value;
 
-    let filteredData = businessData.filter(item => 
-      (
-    item.businessName.toLowerCase().includes(searchTerm) || 
-    item.personName.toLowerCase().includes(searchTerm) || 
-    item.businessNameEnglish.toLowerCase().includes(searchTerm) || 
-    item.businessDescription.toLowerCase().includes(searchTerm) || 
-    item.businessAddress.toLowerCase().includes(searchTerm)
-  ) &&
-      (category1 === 'All' || item.category1 === category1) &&
-      (category2 === 'All' || item.category2 === category2)
-    );
+    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
+let filteredData = businessData.filter(item => 
+    (searchPattern.test(item.personName) ||
+     searchPattern.test(item.businessName) ||
+     searchPattern.test(item.businessNameEnglish) ||
+     searchPattern.test(item.businessDescription) ||
+     searchPattern.test(item.businessAddress)) &&
+    (category1 === 'All' || item.category1 === category1) &&
+    (category2 === 'All' || item.category2 === category2)
+);
 
     renderList(filteredData);
   }
