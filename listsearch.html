@@ -255,18 +255,30 @@
     const category1 = document.getElementById('category1').value;
     const category2 = document.getElementById('category2').value;
 
-    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
-let filteredData = businessData.filter(item => 
-    (searchPattern.test(item.personName) ||
-     searchPattern.test(item.businessName) ||
-     searchPattern.test(item.businessNameEnglish) ||
-     searchPattern.test(item.businessDescription) ||
-     searchPattern.test(item.businessAddress)) &&
-    (category1 === 'All' || item.category1 === category1) &&
-    (category2 === 'All' || item.category2 === category2)
-);
+    function searchBusiness() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (!searchTerm) {
+    renderList(businessData);
+    return;
+  }
 
-    renderList(filteredData);
+  let filteredData = businessData.filter(item => {
+    const fields = [
+      item.businessName,
+      item.personName,
+      item.businessNameEnglish,
+      item.businessDescription,
+      item.businessAddress
+    ].join(' ').toLowerCase().split(/\s+/); // Split by spaces for exact word match
+
+    return fields.includes(searchTerm) &&
+      (category1 === 'All' || item.category1 === category1) &&
+      (category2 === 'All' || item.category2 === category2);
+  });
+
+  renderList(filteredData);
+}
+
   }
 
   fetchCSV();
