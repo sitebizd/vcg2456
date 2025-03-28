@@ -88,6 +88,42 @@
     }
     
     .phone-icon i { color: #fff; font-size: 20px; }
+	
+	/* Search Container */
+.search-container {
+  position: relative;
+  width: 300px;
+  margin: 10px auto;
+}
+
+/* Input Field */
+#searchInput {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+/* Search Icon */
+.search-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+  pointer-events: none;
+}
+
+/* Hover & Focus Effects */
+#searchInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
@@ -104,8 +140,9 @@
     <select id="category2">
       <option value="All">All Subcategories</option>
     </select>
-    <input type="text" id="searchInput" placeholder="Search by Business Name...">
-  </div>
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Search by Business Name...">
+  <i class="fa fa-search search-icon"></i>  </div>
 
   <div id="businessCount"></div>
   <div id="businessList"></div>
