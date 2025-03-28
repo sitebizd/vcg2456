@@ -251,30 +251,23 @@
   document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const category1 = document.getElementById('category1').value;
     const category2 = document.getElementById('category2').value;
 
-    if (!searchTerm) {
-        renderList(businessData);
-        return;
-    }
-
-    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i'); // Match whole words
-
-    let filteredData = businessData.filter(item => 
-        (item.personName.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
-         item.businessName.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
-         item.businessNameEnglish.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
-         item.businessDescription.toLowerCase().split(/\s+/).some(word => searchPattern.test(word)) ||
-         item.businessAddress.toLowerCase().split(/\s+/).some(word => searchPattern.test(word))) &&
-        (category1 === 'All' || item.category1 === category1) &&
-        (category2 === 'All' || item.category2 === category2)
-    );
+    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
+let filteredData = businessData.filter(item => 
+    (searchPattern.test(item.personName) ||
+     searchPattern.test(item.businessName) ||
+     searchPattern.test(item.businessNameEnglish) ||
+     searchPattern.test(item.businessDescription) ||
+     searchPattern.test(item.businessAddress)) &&
+    (category1 === 'All' || item.category1 === category1) &&
+    (category2 === 'All' || item.category2 === category2)
+);
 
     renderList(filteredData);
-}
-
+  }
 
   fetchCSV();
 </script>
