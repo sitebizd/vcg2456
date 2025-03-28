@@ -141,7 +141,7 @@
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
 
-      const [profileID, personName, businessName, , , businessAddress, , , , category1, category2, , mobileNumber, , , , , , image1] = matches;
+      const [profileID, personName, businessName, , , businessAddress, , , , category1, category2, mobileNumber, , , , , , , image1] = matches;
 
       if (profileID && businessName) {
         rows.push({ profileID, personName, businessName, businessAddress, category1, category2, image1, mobileNumber });
