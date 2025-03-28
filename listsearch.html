@@ -144,7 +144,7 @@
       const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, paymentStatus, verifiedBadges, category1, category2, , mobileNumber, whatsappNumber, website, facebookPage, youtubeChannel, instagram, googleMap, image1] = matches;
 
       if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessAddress, category1, category2, image1, mobileNumber });
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category1, category2, image1, mobileNumber });
       }
     });
     return rows;
