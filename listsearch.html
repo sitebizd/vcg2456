@@ -6,13 +6,140 @@
   <title>Business List</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* Your CSS styles remain unchanged for layout and aesthetics */
+    /* Refer to the original styles from your code */
+  </style>
+</head>
+<body>
+
+<h1>Business List</h1>
+
+<div class="container">
+  <div class="filters">
+    <select id="category1">
+      <option value="All">All Categories</option>
+    </select>
+    <select id="category2">
+      <option value="All">All Subcategories</option>
+    </select>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by name, description, or address..." style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
+  </div>
+
+  <div id="businessCount"></div>
+  <div id="businessList"></div>
+</div>
+
+<script>
+  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv';
+  let businessData = [];
+
+  // Fetch CSV Data
+  async function fetchCSV() {
+    try {
+      const response = await fetch(SPREADSHEET_URL);
+      const data = await response.text();
+      businessData = parseCSV(data);
+      populateFilters();
+      renderList(businessData);
+    } catch (error) {
+      console.error("Error fetching CSV:", error);
+    }
+  }
+
+  // Parse CSV Data
+  function parseCSV(text) {
+    const lines = text.trim().split("\n").slice(1);
+    const rows = [];
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
+
+    lines.forEach(line => {
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
+
+      const [
+        profileID, personName, businessName, businessNameEnglish,
+        businessDescription, businessAddress, category1, category2, image1
+      ] = matches;
+
+      if (profileID && businessName) {
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category1, category2, image1 });
+      }
+    });
+    return rows;
+  }
+
+  // Populate Filters
+  function populateFilters() {
+    const category1Set = new Set();
+    const category2Set = new Set();
+
+    businessData.forEach(item => {
+      if (item.category1) category1Set.add(item.category1);
+      if (item.category2) category2Set.add(item.category2);
+    });
+
+    populateSelect(document.getElementById('category1'), Array.from(category1Set));
+    populateSelect(document.getElementById('category2'), Array.from(category2Set));
+  }
+
+  function populateSelect(select, options) {
+    select.innerHTML = `<option value="All">All</option>`;
+    options.filter(opt => opt).forEach(option => {
+      select.innerHTML += `<option value="${option}">${option}</option>`;
+    });
+  }
+
+  // Render List
+  function renderList(data) {
+    const businessList = document.getElementById('businessList');
+    const businessCount = document.getElementById('businessCount');
+    businessList.innerHTML = '';
+
+    if (data.length === 0) {
+      businessList.innerHTML = '<p>No businesses found.</p>';
+      businessCount.textContent = `Total Businesses: 0`;
+      return;
+    }
+
+    businessCount.textContent = `Total Businesses: ${data.length}`;
+
+    data.forEach(item => {
+      const imageSrc = item.image1 || 'default.jpg';
+
+      businessList.innerHTML += `
+        <div class="business-card">
+          <div class="info">
+            <div class="title">${item.businessName}</div>
+            <div class="person">${item.personName}</div>
+            <div class="subtitle">${item.businessDescription}</div>
+            <div class="subtitle">${item.businessAddress}</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
-    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    select, input { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; }
-    input { width: 300px; }
+    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; }
+    select { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; width: 200px; }
+    
     .business-card { 
       display: flex; 
       align-items: center; 
@@ -25,6 +152,7 @@
       width: 100%;
       overflow: hidden;
     }
+    
     .info { 
       flex-grow: 1; 
       padding-right: 15px; 
@@ -32,20 +160,33 @@
       display: flex; 
       flex-direction: column;
     }
+    
     .title, .subtitle, .person { 
       white-space: normal; 
       overflow: hidden;
       text-overflow: ellipsis;
       word-break: break-word;
     }
+    
     .title { 
       font-size: 1rem; 
       font-weight: bold; 
       color: #0000FF;
       margin-bottom: 5px;
     }
-    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
-    .subtitle { font-size: 0.8rem; color: #777; }
+    
+    .person {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    
+    .subtitle { 
+      font-size: 0.8rem; 
+      color: #777;
+    }
+    
     .image { 
       width: 60px; 
       height: 60px; 
@@ -54,11 +195,13 @@
       margin-right: 15px;
       flex-shrink: 0;
     }
+    
     .image img { 
       width: 100%; 
       height: 100%; 
       object-fit: cover; 
     }
+    
     .phone-icon {
       width: 40px; 
       height: 40px; 
@@ -69,7 +212,9 @@
       justify-content: center;
       flex-shrink: 0;
     }
+    
     .phone-icon i { color: #fff; font-size: 20px; }
+    
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
@@ -79,13 +224,16 @@
 
 <div class="container">
   <div class="filters">
-    <input type="text" id="searchInput" placeholder="Search by Business or Person">
     <select id="category1">
       <option value="All">All Categories</option>
     </select>
     <select id="category2">
       <option value="All">All Subcategories</option>
     </select>
+  </div>
+  
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by name, description, or address..." style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
   </div>
 
   <div id="businessCount"></div>
@@ -95,7 +243,6 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
-  let filteredData = [];
 
   // Fetch CSV Data
   async function fetchCSV() {
@@ -103,9 +250,9 @@
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
-      filteredData = businessData;
       populateFilters();
       renderList(businessData);
+      handleURLHash();
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
@@ -126,12 +273,28 @@
       
       // Map to correct columns
       const [
-        profileID, personName, businessName, businessNameEnglish,
-        businessDescription, businessAddress, marketArea,
-        paymentStatus, verifiedBadges, category1,
-        category2, mobileNumber, whatsappNumber,
-        website, facebookPage, youtubeChannel,
-        instagram, googleMap, image1, image2, image3, image4
+        profileID,             // Column A
+        personName,            // Column B
+        businessName,          // Column C
+        businessNameEnglish,   // Column D
+        businessDescription,   // Column E
+        businessAddress,       // Column F
+        marketArea,            // Column G
+        paymentStatus,         // Column H
+        verifiedBadges,        // Column I
+        category1,             // Column J
+        category2,             // Column K
+        mobileNumber,          // Column L
+        whatsappNumber,        // Column M
+        website,               // Column N
+        facebookPage,          // Column O
+        youtubeChannel,        // Column P
+        instagram,             // Column Q
+        googleMap,             // Column R
+        image1,                // Column S
+        image2,                // Column T
+        image3,                // Column U
+        image4                 // Column V
       ] = matches;
 
       if (profileID && businessName) {
@@ -200,30 +363,43 @@
     });
   }
 
-  // Event Listeners
   document.getElementById('category1').addEventListener('change', filterList);
   document.getElementById('category2').addEventListener('change', filterList);
-  document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
     const category1 = document.getElementById('category1').value;
     const category2 = document.getElementById('category2').value;
-    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    let filteredData = businessData;
 
-    filteredData = businessData.filter(item => {
-      return (
-        (category1 === 'All' || item.category1 === category1) &&
-        (category2 === 'All' || item.category2 === category2) &&
-        (item.businessName.toLowerCase().includes(searchQuery) || 
-         item.personName.toLowerCase().includes(searchQuery)
-         item.personName.toLowerCase().includes(searchQuery) ||
-		 item.businessAddress.toLowerCase().includes(searchQuery))
-      );
-    });
+    if (category1 !== 'All') filteredData = filteredData.filter(item => item.category1 === category1);
+    if (category2 !== 'All') filteredData = filteredData.filter(item => item.category2 === category2);
     renderList(filteredData);
   }
 
+  function handleURLHash() { /* Handle hash if needed */ }
+
   fetchCSV();
+  
+  
+    // Add search functionality
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const filteredData = businessData.filter(item =>
+      item.personName.toLowerCase().includes(query) ||
+      item.businessName.toLowerCase().includes(query) ||
+      item.businessNameEnglish.toLowerCase().includes(query) ||
+      item.businessDescription.toLowerCase().includes(query) ||
+      item.businessAddress.toLowerCase().includes(query)
+    );
+    renderList(filteredData);
+  });
+
+  fetchCSV();
+</script>
+
+</body>
+</html>
+
 </script>
 
 </body>
