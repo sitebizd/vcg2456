@@ -9,119 +9,34 @@
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
-    .container { width: 100%; margin: 0 auto; padding: 10px; }
+    .container { width: 100%; margin: 0 auto; padding: 10px; text-align: center; }
+
+    .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
     
     .business-card { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      background-color: #fff; 
-      padding: 15px; 
-      margin-bottom: 15px; 
-      border-radius: 8px; 
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-      width: 100%;
-      overflow: hidden;
+      display: flex; align-items: center; justify-content: space-between;
+      background-color: #fff; padding: 15px; margin-bottom: 15px;
+      border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%; max-width: 600px; margin-left: auto; margin-right: auto;
     }
+
+    .info { flex-grow: 1; padding-right: 15px; overflow: hidden; display: flex; flex-direction: column; }
+    .title, .subtitle, .person { white-space: normal; word-break: break-word; }
+    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
+    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
+    .subtitle { font-size: 0.8rem; color: #777; }
     
-    .info { 
-      flex-grow: 1; 
-      padding-right: 15px; 
-      overflow: hidden; 
-      display: flex; 
-      flex-direction: column;
-    }
-    
-    .title, .subtitle, .person { 
-      white-space: normal; 
-      overflow: hidden;
-      text-overflow: ellipsis;
-      word-break: break-word;
-    }
-    
-    .title { 
-      font-size: 1rem; 
-      font-weight: bold; 
-      color: #0000FF;
-      margin-bottom: 5px;
-    }
-    
-    .person {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #555;
-      margin-bottom: 5px;
-    }
-    
-    .subtitle { 
-      font-size: 0.8rem; 
-      color: #777;
-    }
-    
-    .image { 
-      width: 60px; 
-      height: 60px; 
-      border-radius: 8px; 
-      overflow: hidden; 
-      margin-right: 15px;
-      flex-shrink: 0;
-    }
-    
-    .image img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-    }
+    .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
+    .image img { width: 100%; height: 100%; object-fit: cover; }
     
     .phone-icon {
-      width: 40px; 
-      height: 40px; 
-      background-color: #0000FF; 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      flex-shrink: 0;
+      width: 40px; height: 40px; background-color: #0000FF;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    
     .phone-icon i { color: #fff; font-size: 20px; }
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
-
-    /* Search Container */
-    .search-container {
-      position: relative;
-      width: 300px;
-      margin: 10px auto;
-    }
-
-    /* Input Field */
-    #searchInput {
-      width: 100%;
-      padding: 10px 40px 10px 15px;
-      font-size: 16px;
-      border: 2px solid #ddd;
-      border-radius: 25px;
-      outline: none;
-      transition: 0.3s ease;
-    }
-
-    /* Search Icon */
-    .search-icon {
-      position: absolute;
-      top: 50%;
-      right: 15px;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: #888;
-      pointer-events: none;
-    }
-
-    /* Hover & Focus Effects */
-    #searchInput:focus {
-      border-color: #0000FF;
-      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-    }
   </style>
 </head>
 <body>
@@ -129,9 +44,13 @@
 <h1>Business List</h1>
 
 <div class="container">
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search by Business Name...">
-    <i class="fa fa-search search-icon"></i>
+  <div class="filters">
+    <select id="categorySelect">
+      <option value="">Select Category</option>
+    </select>
+    <select id="subCategorySelect">
+      <option value="">Select Sub-category</option>
+    </select>
   </div>
 
   <div id="businessCount"></div><br>
@@ -141,6 +60,8 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
+  let categories = new Set();
+  let subCategories = {};
 
   // Fetch CSV Data
   async function fetchCSV() {
@@ -148,6 +69,7 @@
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
+      populateCategoryDropdown();
       renderList(businessData);
     } catch (error) {
       console.error("Error fetching CSV:", error);
@@ -167,16 +89,70 @@
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
 
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , , , , mobileNumber, , , , , , , image1] = matches;
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , , category, subCategory, mobileNumber, , , , , , , image1] = matches;
 
       if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, image1, mobileNumber });
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category, subCategory, image1, mobileNumber });
+
+        if (category) {
+          categories.add(category);
+          if (!subCategories[category]) subCategories[category] = new Set();
+          if (subCategory) subCategories[category].add(subCategory);
+        }
       }
     });
+
     return rows;
   }
 
-  // Render List
+  // Populate Category Dropdown
+  function populateCategoryDropdown() {
+    const categorySelect = document.getElementById('categorySelect');
+    categories.forEach(cat => {
+      let option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      categorySelect.appendChild(option);
+    });
+  }
+
+  // Populate Sub-category Dropdown based on Category Selection
+  function populateSubCategoryDropdown(category) {
+    const subCategorySelect = document.getElementById('subCategorySelect');
+    subCategorySelect.innerHTML = '<option value="">Select Sub-category</option>';
+    
+    if (subCategories[category]) {
+      subCategories[category].forEach(sub => {
+        let option = document.createElement('option');
+        option.value = sub;
+        option.textContent = sub;
+        subCategorySelect.appendChild(option);
+      });
+    }
+  }
+
+  // Filter and Render List
+  function filterList() {
+    const selectedCategory = document.getElementById('categorySelect').value;
+    const selectedSubCategory = document.getElementById('subCategorySelect').value;
+
+    let filteredData = businessData.filter(item =>
+      (!selectedCategory || item.category === selectedCategory) &&
+      (!selectedSubCategory || item.subCategory === selectedSubCategory)
+    );
+
+    updateURL(selectedCategory, selectedSubCategory);
+    renderList(filteredData);
+  }
+
+  // Update URL Hash
+  function updateURL(category, subCategory) {
+    let urlHash = category ? `#${category}` : '';
+    if (subCategory) urlHash += `-${subCategory.replace(/\s/g, '')}`;
+    history.replaceState(null, null, urlHash);
+  }
+
+  // Render Business List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
     const businessCount = document.getElementById('businessCount');
@@ -197,40 +173,25 @@
       businessList.innerHTML += `
         <div class="business-card">
           <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image">
-              <img src="${imageSrc}" alt="${item.businessName}">
-            </div>
+            <div class="image"><img src="${imageSrc}" alt="${item.businessName}"></div>
             <div class="info">
               <div class="title">${item.businessName}</div>
               <div class="person">👤 ${item.personName}</div>
               <div class="subtitle">${item.businessAddress}</div>
             </div>
           </a>
-          <a href="tel:${item.mobileNumber}" class="phone-icon">
-            <i class="fas fa-phone"></i>
-          </a>
+          <a href="tel:${item.mobileNumber}" class="phone-icon"><i class="fas fa-phone"></i></a>
         </div>
       `;
     });
   }
 
-  document.getElementById('searchInput').addEventListener('input', filterList);
+  document.getElementById('categorySelect').addEventListener('change', function () {
+    populateSubCategoryDropdown(this.value);
+    filterList();
+  });
 
-  function filterList() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    let searchPattern = new RegExp(searchTerm, 'i');
-
-
-    let filteredData = businessData.filter(item => 
-      searchPattern.test(item.personName) ||
-      searchPattern.test(item.businessName) ||
-      searchPattern.test(item.businessNameEnglish) ||
-      searchPattern.test(item.businessDescription) ||
-      searchPattern.test(item.businessAddress)
-    );
-
-    renderList(filteredData);
-  }
+  document.getElementById('subCategorySelect').addEventListener('change', filterList);
 
   fetchCSV();
 </script>
