@@ -88,46 +88,43 @@
     }
     
     .phone-icon i { color: #fff; font-size: 20px; }
-	
-	
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
-	
-	/* Search Container */
-.search-container {
-  position: relative;
-  width: 300px;
-  margin: 10px auto;
-}
 
-/* Input Field */
-#searchInput {
-  width: 100%;
-  padding: 10px 40px 10px 15px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 25px;
-  outline: none;
-  transition: 0.3s ease;
-}
+    /* Search Container */
+    .search-container {
+      position: relative;
+      width: 300px;
+      margin: 10px auto;
+    }
 
-/* Search Icon */
-.search-icon {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: #888;
-  pointer-events: none;
-}
+    /* Input Field */
+    #searchInput {
+      width: 100%;
+      padding: 10px 40px 10px 15px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      transition: 0.3s ease;
+    }
 
-/* Hover & Focus Effects */
-#searchInput:focus {
-  border-color: #0000FF;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-}
+    /* Search Icon */
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #888;
+      pointer-events: none;
+    }
 
+    /* Hover & Focus Effects */
+    #searchInput:focus {
+      border-color: #0000FF;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -139,14 +136,21 @@
     <select id="category1">
       <option value="All">All Categories</option>
     </select>
+    <br>
     <select id="category2">
       <option value="All">All Subcategories</option>
     </select>
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="Search by Business Name...">
-  <i class="fa fa-search search-icon"></i>  </div>
+  </div>
+  <br>
+  
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by Business Name...">
+    <i class="fa fa-search search-icon"></i>
+  </div>
+  <br>
 
-  <div id="businessCount"></div><br>
+  <div id="businessCount"></div>
+  <br>
   <div id="businessList"></div>
 </div>
 
@@ -154,7 +158,6 @@
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
 
-  // Fetch CSV Data
   async function fetchCSV() {
     try {
       const response = await fetch(SPREADSHEET_URL);
@@ -167,29 +170,25 @@
     }
   }
 
-  // Parse CSV Data
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
-    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
-
     lines.forEach(line => {
-      const matches = [];
-      let match;
-      while ((match = regex.exec(line))) {
-        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
-      }
-
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, paymentStatus, verifiedBadges, category1, category2, , mobileNumber, whatsappNumber, website, facebookPage, youtubeChannel, instagram, googleMap, image1] = matches;
-
-      if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category1, category2, image1, mobileNumber });
-      }
+      const cols = line.split(",");
+      rows.push({
+        profileID: cols[0],
+        personName: cols[1],
+        businessName: cols[2],
+        businessAddress: cols[3],
+        category1: cols[4],
+        category2: cols[5],
+        image1: cols[6],
+        mobileNumber: cols[7]
+      });
     });
     return rows;
   }
 
-  // Populate Filters
   function populateFilters() {
     const category1Set = new Set();
     const category2Set = new Set();
@@ -205,12 +204,11 @@
 
   function populateSelect(select, options) {
     select.innerHTML = `<option value="All">All</option>`;
-    options.filter(opt => opt).forEach(option => {
+    options.forEach(option => {
       select.innerHTML += `<option value="${option}">${option}</option>`;
     });
   }
 
-  // Render List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
     const businessCount = document.getElementById('businessCount');
@@ -225,25 +223,20 @@
     businessCount.textContent = `Total Businesses: ${data.length}`;
 
     data.forEach(item => {
-      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
-      const imageSrc = item.image1 ? item.image1 : 'default.jpg';
-
       businessList.innerHTML += `
         <div class="business-card">
-          <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image">
-              <img src="${imageSrc}" alt="${item.businessName}">
-            </div>
-            <div class="info">
-              <div class="title">${item.businessName}</div>
-              <div class="person">👤 ${item.personName}</div>
-              <div class="subtitle">${item.businessAddress}</div>
-            </div>
-          </a>
+          <div class="info">
+            <div class="title">${item.businessName}</div>
+            <br>
+            <div class="person">👤 ${item.personName}</div>
+            <br>
+            <div class="subtitle">${item.businessAddress}</div>
+          </div>
           <a href="tel:${item.mobileNumber}" class="phone-icon">
             <i class="fas fa-phone"></i>
           </a>
         </div>
+        <br>
       `;
     });
   }
@@ -253,22 +246,7 @@
   document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const category1 = document.getElementById('category1').value;
-    const category2 = document.getElementById('category2').value;
-
-    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
-let filteredData = businessData.filter(item => 
-    (searchPattern.test(item.personName) ||
-     searchPattern.test(item.businessName) ||
-     searchPattern.test(item.businessNameEnglish) ||
-     searchPattern.test(item.businessDescription) ||
-     searchPattern.test(item.businessAddress)) &&
-    (category1 === 'All' || item.category1 === category1) &&
-    (category2 === 'All' || item.category2 === category2)
-);
-
-    renderList(filteredData);
+    renderList(businessData);
   }
 
   fetchCSV();
