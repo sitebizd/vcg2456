@@ -15,17 +15,53 @@
     select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
     
     .business-card { 
-      display: flex; align-items: center; justify-content: space-between;
-      background-color: #fff; padding: 15px; margin-bottom: 15px;
-      border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 100%; max-width: 600px; margin-left: auto; margin-right: auto;
-    }
+  display: flex; 
+  align-items: center; 
+  background-color: #fff; 
+  padding: 15px; 
+  margin-bottom: 15px;
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 100%; 
+  max-width: 600px; 
+  margin-left: auto; 
+  margin-right: auto;
+}
 
-    .info { flex-grow: 1; padding-right: 15px; overflow: hidden; display: flex; flex-direction: column; }
-    .title, .subtitle, .person { white-space: normal; word-break: break-word; }
-    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
-    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
-    .subtitle { font-size: 0.8rem; color: #777; }
+.info { 
+  flex-grow: 1; 
+  padding-right: 15px; 
+  overflow: hidden; 
+  display: flex; 
+  flex-direction: column; 
+  text-align: left; /* Ensures left alignment */
+}
+
+.title, .subtitle, .person { 
+  white-space: normal; 
+  word-break: break-word; 
+  text-align: left; /* Ensures left alignment */
+}
+
+.title { 
+  font-size: 1rem; 
+  font-weight: bold; 
+  color: #0000FF; 
+  margin-bottom: 5px; 
+}
+
+.person { 
+  font-size: 0.9rem; 
+  font-weight: 500; 
+  color: #555; 
+  margin-bottom: 5px; 
+}
+
+.subtitle { 
+  font-size: 0.8rem; 
+  color: #777; 
+}
+
     
     .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
     .image img { width: 100%; height: 100%; object-fit: cover; }
