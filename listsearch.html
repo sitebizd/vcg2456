@@ -85,7 +85,37 @@
     .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
     .image img { width: 100%; height: 100%; object-fit: cover; }
     
-  
+ .search-container {
+  position: relative;
+  width: 300px;
+  margin: 10px auto;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+  pointer-events: none;
+}
+
+#searchInput:focus {
+  border-color: #0000FF;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+ 
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
@@ -103,6 +133,11 @@
       <option value="">Select Sub-category</option>
     </select>
   </div>
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Search by Business Name...">
+  <i class="fa fa-search search-icon"></i>
+</div>
 
   <div id="businessCount"></div><br>
   <div id="businessList"></div>
@@ -195,6 +230,26 @@
     updateURL(selectedCategory, selectedSubCategory);
     renderList(filteredData);
   }
+  
+  
+  document.getElementById('searchInput').addEventListener('input', filterList);
+
+function filterList() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  let searchPattern = new RegExp(searchTerm, 'i');
+
+  let filteredData = businessData.filter(item => 
+    searchPattern.test(item.personName) ||
+    searchPattern.test(item.businessName) ||
+    searchPattern.test(item.businessNameEnglish) ||
+    searchPattern.test(item.businessDescription) ||
+    searchPattern.test(item.businessAddress)
+  );
+
+  renderList(filteredData);
+}
+
+  
 
   // Update URL Hash
   function updateURL(category, subCategory) {
