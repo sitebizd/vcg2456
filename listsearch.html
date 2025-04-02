@@ -218,7 +218,8 @@
 
   function filterList() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
+    let searchPattern = new RegExp(searchTerm, 'i');
+
 
     let filteredData = businessData.filter(item => 
       searchPattern.test(item.personName) ||
