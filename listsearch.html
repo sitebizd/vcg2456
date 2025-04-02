@@ -10,9 +10,6 @@
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; }
-    .filters { margin-bottom: 15px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    select, input { padding: 12px; font-size: 1rem; border-radius: 8px; border: 2px solid #ddd; background-color: #fff; width: 200px; }
-    #searchInput { width: 250px; }
     
     .business-card { 
       display: flex; 
@@ -88,13 +85,43 @@
     }
     
     .phone-icon i { color: #fff; font-size: 20px; }
-	
-	
     
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
-	
 
+    /* Search Container */
+    .search-container {
+      position: relative;
+      width: 300px;
+      margin: 10px auto;
+    }
 
+    /* Input Field */
+    #searchInput {
+      width: 100%;
+      padding: 10px 40px 10px 15px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      transition: 0.3s ease;
+    }
+
+    /* Search Icon */
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #888;
+      pointer-events: none;
+    }
+
+    /* Hover & Focus Effects */
+    #searchInput:focus {
+      border-color: #0000FF;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -102,19 +129,13 @@
 <h1>Business List</h1>
 
 <div class="container">
-  <div class="filters">
-    <select id="category1">
-      <option value="All">All Categories</option>
-    </select>
-    <select id="category2">
-      <option value="All">All Subcategories</option>
-    </select><br>
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="Search by Business Name...">
-  <i class="fa fa-search search-icon"></i>  </div>
-<br>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by Business Name...">
+    <i class="fa fa-search search-icon"></i>
+  </div>
+
   <div id="businessCount"></div><br>
-  <div id="businessList"></div><br>
+  <div id="businessList"></div>
 </div>
 
 <script>
@@ -127,7 +148,6 @@
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
-      populateFilters();
       renderList(businessData);
     } catch (error) {
       console.error("Error fetching CSV:", error);
@@ -147,34 +167,13 @@
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
 
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, paymentStatus, verifiedBadges, category1, category2, , mobileNumber, whatsappNumber, website, facebookPage, youtubeChannel, instagram, googleMap, image1] = matches;
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , , , , mobileNumber, , , , , , , image1] = matches;
 
       if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category1, category2, image1, mobileNumber });
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, image1, mobileNumber });
       }
     });
     return rows;
-  }
-
-  // Populate Filters
-  function populateFilters() {
-    const category1Set = new Set();
-    const category2Set = new Set();
-
-    businessData.forEach(item => {
-      if (item.category1) category1Set.add(item.category1);
-      if (item.category2) category2Set.add(item.category2);
-    });
-
-    populateSelect(document.getElementById('category1'), Array.from(category1Set));
-    populateSelect(document.getElementById('category2'), Array.from(category2Set));
-  }
-
-  function populateSelect(select, options) {
-    select.innerHTML = `<option value="All">All</option>`;
-    options.filter(opt => opt).forEach(option => {
-      select.innerHTML += `<option value="${option}">${option}</option>`;
-    });
   }
 
   // Render List
@@ -196,7 +195,7 @@
       const imageSrc = item.image1 ? item.image1 : 'default.jpg';
 
       businessList.innerHTML += `
-        <br><div class="business-card">
+        <div class="business-card">
           <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
             <div class="image">
               <img src="${imageSrc}" alt="${item.businessName}">
@@ -215,25 +214,19 @@
     });
   }
 
-  document.getElementById('category1').addEventListener('change', filterList);
-  document.getElementById('category2').addEventListener('change', filterList);
   document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const category1 = document.getElementById('category1').value;
-    const category2 = document.getElementById('category2').value;
-
     let searchPattern = new RegExp(`\\b${searchTerm}\\b`, 'i');
-let filteredData = businessData.filter(item => 
-    (searchPattern.test(item.personName) ||
-     searchPattern.test(item.businessName) ||
-     searchPattern.test(item.businessNameEnglish) ||
-     searchPattern.test(item.businessDescription) ||
-     searchPattern.test(item.businessAddress)) &&
-    (category1 === 'All' || item.category1 === category1) &&
-    (category2 === 'All' || item.category2 === category2)
-);
+
+    let filteredData = businessData.filter(item => 
+      searchPattern.test(item.personName) ||
+      searchPattern.test(item.businessName) ||
+      searchPattern.test(item.businessNameEnglish) ||
+      searchPattern.test(item.businessDescription) ||
+      searchPattern.test(item.businessAddress)
+    );
 
     renderList(filteredData);
   }
