@@ -218,36 +218,31 @@
   }
 
   // Filter and Render List
-  function filterList() {
-    const selectedCategory = document.getElementById('categorySelect').value;
-    const selectedSubCategory = document.getElementById('subCategorySelect').value;
-
-    let filteredData = businessData.filter(item =>
-      (!selectedCategory || item.category === selectedCategory) &&
-      (!selectedSubCategory || item.subCategory === selectedSubCategory)
-    );
-
-    updateURL(selectedCategory, selectedSubCategory);
-    renderList(filteredData);
-  }
-  
-  
-  document.getElementById('searchInput').addEventListener('input', filterList);
+document.getElementById('searchInput').addEventListener('input', filterList);
+document.getElementById('categorySelect').addEventListener('change', filterList);
+document.getElementById('subCategorySelect').addEventListener('change', filterList);
 
 function filterList() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  const selectedCategory = document.getElementById('categorySelect').value;
+  const selectedSubCategory = document.getElementById('subCategorySelect').value;
+
   let searchPattern = new RegExp(searchTerm, 'i');
 
-  let filteredData = businessData.filter(item => 
-    searchPattern.test(item.personName) ||
-    searchPattern.test(item.businessName) ||
-    searchPattern.test(item.businessNameEnglish) ||
-    searchPattern.test(item.businessDescription) ||
-    searchPattern.test(item.businessAddress)
+  let filteredData = businessData.filter(item =>
+    (!selectedCategory || item.category === selectedCategory) &&
+    (!selectedSubCategory || item.subCategory === selectedSubCategory) &&
+    (searchPattern.test(item.personName) ||
+     searchPattern.test(item.businessName) ||
+     searchPattern.test(item.businessNameEnglish) ||
+     searchPattern.test(item.businessDescription) ||
+     searchPattern.test(item.businessAddress))
   );
 
+  updateURL(selectedCategory, selectedSubCategory);
   renderList(filteredData);
 }
+
 
   
 
