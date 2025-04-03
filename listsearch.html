@@ -139,7 +139,7 @@
 
     lines.forEach(line => {
       const cols = line.split(",");
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , , category, subCategory, , mobileNumber, , , , , , , image1] = cols;
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, ,  , category, subCategory, , mobileNumber, , , , , , , image1] = cols;
 
       if (profileID && businessName) {
         rows.push({ profileID, personName, businessName, businessDescription, businessAddress, category, subCategory, image1, mobileNumber });
