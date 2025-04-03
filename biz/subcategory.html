@@ -237,12 +237,11 @@
 
 
     let filteredData = businessData.filter(item => 
-      item.category === 'Medical Store' &&
-      (searchPattern.test(item.personName) ||
-       searchPattern.test(item.businessName) ||
-       searchPattern.test(item.businessNameEnglish) ||
-       searchPattern.test(item.businessDescription) ||
-       searchPattern.test(item.businessAddress))
+      searchPattern.test(item.personName) ||
+      searchPattern.test(item.businessName) ||
+      searchPattern.test(item.businessNameEnglish) ||
+      searchPattern.test(item.businessDescription) ||
+      searchPattern.test(item.businessAddress)
     );
 
     renderList(filteredData);
