@@ -147,7 +147,7 @@
       const data = await response.text();
       businessData = parseCSV(data);
       
-      // Automatically filter for "Medical Store" on page load
+      // Automatically filter for "Main Category" on page load
       const filteredData = businessData.filter(item => item.Category === 'Store');
       renderList(filteredData);
     } catch (error) {
@@ -168,7 +168,7 @@
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
 
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , Category, , , mobileNumber, , , , , , , image1] = matches;
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , Category, , , mobileNumber, , , , , , image1] = matches;
 
       if (profileID && businessName) {
         rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, Category, image1, mobileNumber });
