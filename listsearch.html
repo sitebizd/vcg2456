@@ -246,12 +246,32 @@ function filterList() {
 
   
 
-  // Update URL Hash
-  function updateURL(category, subCategory) {
+// Update URL Hash without reloading the page
+function updateURL(category, subCategory) {
     let urlHash = category ? `#${category}` : '';
     if (subCategory) urlHash += `-${subCategory.replace(/\s/g, '')}`;
     history.replaceState(null, null, urlHash);
-  }
+}
+
+// Apply filters when the page loads based on URL hash
+window.addEventListener('load', function() {
+    applyFiltersFromURL();
+});
+
+function applyFiltersFromURL() {
+    let hash = window.location.hash.substring(1); // Remove #
+    if (!hash) return; // No filter applied
+
+    let [category, subCategory] = hash.split('-'); // Extract category and subcategory
+
+    // Find and set the selected values in dropdowns
+    if (category) document.getElementById('categorySelect').value = category;
+    if (subCategory) document.getElementById('subCategorySelect').value = subCategory;
+
+    // Call filterList() to apply filters
+    filterList();
+}
+
 
   // Render Business List
   function renderList(data) {
