@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,113 +10,85 @@
     body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0; }
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; text-align: center; }
-
     .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
     select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
-    
-.business-card { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; /* Ensures space between content and phone icon */
-  background-color: #fff; 
-  padding: 15px; 
-  margin-bottom: 15px;
-  border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 100%; 
-  max-width: 600px; 
-  margin-left: auto; 
-  margin-right: auto;
-}
 
-.info { 
-  flex-grow: 1; 
-  padding-right: 15px; 
-  overflow: hidden; 
-  display: flex; 
-  flex-direction: column; 
-  text-align: left; /* Ensures left alignment */
-}
+    .business-card { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      background-color: #fff; 
+      padding: 15px; 
+      margin-bottom: 15px;
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%; 
+      max-width: 600px; 
+      margin-left: auto; 
+      margin-right: auto;
+    }
 
-.title, .subtitle, .person { 
-  white-space: normal; 
-  word-break: break-word; 
-  text-align: left; /* Ensures left alignment */
-}
+    .info { 
+      flex-grow: 1; 
+      padding-right: 15px; 
+      display: flex; 
+      flex-direction: column; 
+      text-align: left;
+    }
 
-.title { 
-  font-size: 1rem; 
-  font-weight: bold; 
-  color: #0000FF; 
-  margin-bottom: 5px; 
-}
+    .title, .subtitle, .person { text-align: left; }
+    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
+    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
+    .subtitle { font-size: 0.8rem; color: #777; }
 
-.person { 
-  font-size: 0.9rem; 
-  font-weight: 500; 
-  color: #555; 
-  margin-bottom: 5px; 
-}
+    .phone-icon { 
+      width: 40px; 
+      height: 40px; 
+      background-color: #0000FF;
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex-shrink: 0; 
+      margin-left: auto;
+    }
 
-.subtitle { 
-  font-size: 0.8rem; 
-  color: #777; 
-}
+    .phone-icon i { color: #fff; font-size: 20px; }
 
-/* Ensure the phone icon stays aligned to the right */
-.phone-icon { 
-  width: 40px; 
-  height: 40px; 
-  background-color: #0000FF;
-  border-radius: 50%; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  flex-shrink: 0; 
-  margin-left: auto; /* Pushes the icon to the right */
-}
-
-.phone-icon i { 
-  color: #fff; 
-  font-size: 20px; 
-}
-
-    
     .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
     .image img { width: 100%; height: 100%; object-fit: cover; }
-    
- .search-container {
-  position: relative;
-  width: 300px;
-  margin: 10px auto;
-}
 
-#searchInput {
-  width: 100%;
-  padding: 10px 40px 10px 15px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 25px;
-  outline: none;
-  transition: 0.3s ease;
-}
+    .search-container {
+      position: relative;
+      width: 300px;
+      margin: 10px auto;
+    }
 
-.search-icon {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: #888;
-  pointer-events: none;
-}
+    #searchInput {
+      width: 100%;
+      padding: 10px 40px 10px 15px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      outline: none;
+      transition: 0.3s ease;
+    }
 
-#searchInput:focus {
-  border-color: #0000FF;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-}
- 
-    
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #888;
+      pointer-events: none;
+    }
+
+    #searchInput:focus {
+      border-color: #0000FF;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
+
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
@@ -130,14 +102,14 @@
       <option value="">Select Category</option>
     </select>
     <select id="subCategorySelect">
-      <option value="">Select Sub-category</option>
+      <option value="Medical Store" selected>Medical Store</option>
     </select>
   </div>
 
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="Search by Business Name...">
-  <i class="fa fa-search search-icon"></i>
-</div>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by Business Name...">
+    <i class="fa fa-search search-icon"></i>
+  </div>
 
   <div id="businessCount"></div><br>
   <div id="businessList"></div>
@@ -146,8 +118,6 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
-  let categories = new Set();
-  let subCategories = {};
 
   // Fetch CSV Data
   async function fetchCSV() {
@@ -156,7 +126,7 @@
       const data = await response.text();
       businessData = parseCSV(data);
       populateCategoryDropdown();
-      renderList(businessData);
+      filterList(); // Ensure only 'Medical Store' is displayed on load
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
@@ -166,25 +136,13 @@
   function parseCSV(text) {
     const lines = text.trim().split("\n").slice(1);
     const rows = [];
-    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
     lines.forEach(line => {
-      const matches = [];
-      let match;
-      while ((match = regex.exec(line))) {
-        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
-      }
-
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , category, subCategory, , mobileNumber, , , , , , , image1] = matches;
+      const cols = line.split(",");
+      const [profileID, personName, businessName, , businessDescription, businessAddress, , , , category, subCategory, , mobileNumber, , , , , , , image1] = cols;
 
       if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category, subCategory, image1, mobileNumber });
-
-        if (category) {
-          categories.add(category);
-          if (!subCategories[category]) subCategories[category] = new Set();
-          if (subCategory) subCategories[category].add(subCategory);
-        }
+        rows.push({ profileID, personName, businessName, businessDescription, businessAddress, category, subCategory, image1, mobileNumber });
       }
     });
 
@@ -194,6 +152,8 @@
   // Populate Category Dropdown
   function populateCategoryDropdown() {
     const categorySelect = document.getElementById('categorySelect');
+    const categories = new Set(businessData.map(b => b.category));
+
     categories.forEach(cat => {
       let option = document.createElement('option');
       option.value = cat;
@@ -202,117 +162,42 @@
     });
   }
 
-  // Populate Sub-category Dropdown based on Category Selection
-  function populateSubCategoryDropdown(category) {
-    const subCategorySelect = document.getElementById('subCategorySelect');
-    subCategorySelect.innerHTML = '<option value="">Select Sub-category</option>';
-    
-    if (subCategories[category]) {
-      subCategories[category].forEach(sub => {
-        let option = document.createElement('option');
-        option.value = sub;
-        option.textContent = sub;
-        subCategorySelect.appendChild(option);
-      });
-    }
-  }
-
   // Filter and Render List
-document.getElementById('searchInput').addEventListener('input', filterList);
-document.getElementById('categorySelect').addEventListener('change', filterList);
-document.getElementById('subCategorySelect').addEventListener('change', filterList);
+  document.getElementById('searchInput').addEventListener('input', filterList);
+  document.getElementById('categorySelect').addEventListener('change', filterList);
 
-function filterList() {
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  const selectedCategory = document.getElementById('categorySelect').value;
-  const selectedSubCategory = document.getElementById('subCategorySelect').value;
+  function filterList() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const selectedSubCategory = 'Medical Store'; // Always filter for Medical Store
 
-  let searchPattern = new RegExp(searchTerm, 'i');
+    let filteredData = businessData.filter(item =>
+      item.subCategory === selectedSubCategory &&
+      (item.personName.toLowerCase().includes(searchTerm) ||
+       item.businessName.toLowerCase().includes(searchTerm) ||
+       item.businessDescription.toLowerCase().includes(searchTerm) ||
+       item.businessAddress.toLowerCase().includes(searchTerm))
+    );
 
-  let filteredData = businessData.filter(item =>
-    (!selectedCategory || item.category === selectedCategory) &&
-    (!selectedSubCategory || item.subCategory === selectedSubCategory) &&
-    (searchPattern.test(item.personName) ||
-     searchPattern.test(item.businessName) ||
-     searchPattern.test(item.businessNameEnglish) ||
-     searchPattern.test(item.businessDescription) ||
-     searchPattern.test(item.businessAddress))
-  );
-
-  updateURL(selectedCategory, selectedSubCategory);
-  renderList(filteredData);
-}
-
-
-  
-
-// Update URL Hash without reloading the page
-function updateURL(category, subCategory) {
-    let urlHash = category ? `#${category}` : '';
-    if (subCategory) urlHash += `-${subCategory.replace(/\s/g, '')}`;
-    history.replaceState(null, null, urlHash);
-}
-
-// Apply filters when the page loads based on URL hash
-window.addEventListener('load', function() {
-    applyFiltersFromURL();
-});
-
-function applyFiltersFromURL() {
-    let hash = window.location.hash.substring(1); // Remove #
-    if (!hash) return; // No filter applied
-
-    let [category, subCategory] = hash.split('-'); // Extract category and subcategory
-
-    // Find and set the selected values in dropdowns
-    if (category) document.getElementById('categorySelect').value = category;
-    if (subCategory) document.getElementById('subCategorySelect').value = subCategory;
-
-    // Call filterList() to apply filters
-    filterList();
-}
-
+    renderList(filteredData);
+  }
 
   // Render Business List
   function renderList(data) {
     const businessList = document.getElementById('businessList');
-    const businessCount = document.getElementById('businessCount');
-    businessList.innerHTML = '';
-
-    if (data.length === 0) {
-      businessList.innerHTML = '<p>No businesses found.</p>';
-      businessCount.textContent = `Total Businesses: 0`;
-      return;
-    }
-
-    businessCount.textContent = `Total Businesses: ${data.length}`;
-
-    data.forEach(item => {
-      const link = `https://sitebizd.github.io/bizimages/business/${item.profileID}`;
-      const imageSrc = item.image1 ? item.image1 : 'default.jpg';
-
-      businessList.innerHTML += `
-        <div class="business-card">
-          <a href="${link}" style="display: flex; align-items: center; text-decoration: none;">
-            <div class="image"><img src="${imageSrc}" alt="${item.businessName}"></div>
-            <div class="info">
-              <div class="title">${item.businessName}</div>
-              <div class="person">👤 ${item.personName}</div>
-              <div class="subtitle">${item.businessAddress}</div>
-            </div>
-          </a>
-          <a href="tel:${item.mobileNumber}" class="phone-icon"><i class="fas fa-phone"></i></a>
-        </div>
-      `;
-    });
+    businessList.innerHTML = data.map(item => `
+      <div class="business-card">
+        <a href="https://sitebizd.github.io/bizimages/business/${item.profileID}">
+          <div class="image"><img src="${item.image1 || 'default.jpg'}"></div>
+          <div class="info">
+            <div class="title">${item.businessName}</div>
+            <div class="person">👤 ${item.personName}</div>
+            <div class="subtitle">${item.businessAddress}</div>
+          </div>
+        </a>
+        <a href="tel:${item.mobileNumber}" class="phone-icon"><i class="fas fa-phone"></i></a>
+      </div>
+    `).join('');
   }
-
-  document.getElementById('categorySelect').addEventListener('change', function () {
-    populateSubCategoryDropdown(this.value);
-    filterList();
-  });
-
-  document.getElementById('subCategorySelect').addEventListener('change', filterList);
 
   fetchCSV();
 </script>
