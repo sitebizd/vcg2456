@@ -229,6 +229,24 @@
     });
   }
 
+  document.getElementById('searchInput').addEventListener('input', filterList);
+
+  function filterList() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    let searchPattern = new RegExp(searchTerm, 'i');
+
+
+    let filteredData = businessData.filter(item => 
+      searchPattern.test(item.personName) ||
+      searchPattern.test(item.businessName) ||
+      searchPattern.test(item.businessNameEnglish) ||
+      searchPattern.test(item.businessDescription) ||
+      searchPattern.test(item.businessAddress)
+    );
+
+    renderList(filteredData);
+  }
+
   fetchCSV();
 </script>
 
