@@ -148,7 +148,7 @@
       businessData = parseCSV(data);
       
       // Automatically filter for "Medical Store" on page load
-      const filteredData = businessData.filter(item => item.category === 'Medical Store');
+      const filteredData = businessData.filter(item => item.category === 'Store');
       renderList(filteredData);
     } catch (error) {
       console.error("Error fetching CSV:", error);
