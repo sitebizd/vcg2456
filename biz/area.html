@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business List</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -11,28 +11,27 @@
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; text-align: center; }
 
-    .tags-container {
+    .market-tags {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
-    .tag-button {
-      background-color: #eee;
+    .market-tag {
+      background-color: #e0e0e0;
       border: none;
-      padding: 8px 15px;
       border-radius: 20px;
+      padding: 8px 16px;
       font-size: 14px;
       cursor: pointer;
       transition: background-color 0.3s;
     }
 
-    .tag-button.active,
-    .tag-button:hover {
+    .market-tag.active {
       background-color: #0000FF;
-      color: #fff;
+      color: white;
     }
 
     .business-card { 
@@ -65,19 +64,51 @@
       text-align: left; 
     }
 
-    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
-    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
-    .subtitle { font-size: 0.8rem; color: #777; }
-
-    .phone-icon { 
-      width: 40px; height: 40px; background-color: #0000FF;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-left: auto;
+    .title { 
+      font-size: 1rem; 
+      font-weight: bold; 
+      color: #0000FF; 
+      margin-bottom: 5px; 
     }
 
-    .phone-icon i { color: #fff; font-size: 20px; }
+    .person { 
+      font-size: 0.9rem; 
+      font-weight: 500; 
+      color: #555; 
+      margin-bottom: 5px; 
+    }
 
-    .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
+    .subtitle { 
+      font-size: 0.8rem; 
+      color: #777; 
+    }
+
+    .phone-icon { 
+      width: 40px; 
+      height: 40px; 
+      background-color: #0000FF;
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex-shrink: 0; 
+      margin-left: auto; 
+    }
+
+    .phone-icon i { 
+      color: #fff; 
+      font-size: 20px; 
+    }
+
+    .image { 
+      width: 60px; 
+      height: 60px; 
+      border-radius: 8px; 
+      overflow: hidden; 
+      margin-right: 15px; 
+      flex-shrink: 0; 
+    }
+    
     .image img { width: 100%; height: 100%; object-fit: cover; }
 
     .search-container {
@@ -124,7 +155,7 @@
     <i class="fa fa-search search-icon"></i>
   </div>
 
-  <div class="tags-container" id="tagsContainer"></div>
+  <div class="market-tags" id="marketTags"></div>
 
   <div id="businessCount"></div><br>
   <div id="businessList"></div>
@@ -133,87 +164,94 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
-  let selectedTag = 'All';
+  let currentMarket = '';
 
   async function fetchCSV() {
     try {
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
-      createTags(businessData);
-      renderList(businessData);
+      const marketAreas = [...new Set(businessData.map(item => item.marketArea).filter(Boolean))];
+      renderMarketTags(marketAreas);
+      filterAndRender();
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
   }
 
   function parseCSV(text) {
-    const lines = text.trim().split("\n");
-    const header = lines[0].split(",");
+    const lines = text.trim().split("\n").slice(1);
     const rows = [];
+    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(",");
-      const entry = {};
-      header.forEach((h, index) => {
-        entry[h.trim()] = (values[index] || "").trim();
-      });
+    lines.forEach(line => {
+      const matches = [];
+      let match;
+      while ((match = regex.exec(line))) {
+        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
+      }
 
-      rows.push({
-        profileID: entry["profileID"],
-        personName: entry["personName"],
-        businessName: entry["businessName"],
-        businessNameEnglish: entry["businessNameEnglish"],
-        businessDescription: entry["businessDescription"],
-        businessAddress: entry["businessAddress"],
-        category: entry["category"],
-        marketArea: entry["marketArea"],
-        image1: entry["image1"],
-        mobileNumber: entry["mobileNumber"]
-      });
-    }
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, , , category, subCategory, mobileNumber, , , , , , , image1] = matches;
 
-    return rows.filter(r => r.profileID && r.businessName);
+      if (profileID && businessName) {
+        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, category, image1, mobileNumber });
+      }
+    });
+
+    return rows;
   }
 
-  function createTags(data) {
-    const tagsContainer = document.getElementById("tagsContainer");
-    const uniqueTags = Array.from(new Set(data.map(item => item.marketArea).filter(Boolean)));
-    uniqueTags.sort();
+  function renderMarketTags(markets) {
+    const tagContainer = document.getElementById('marketTags');
+    tagContainer.innerHTML = '';
 
-    tagsContainer.innerHTML = `<button class="tag-button active" data-tag="All">All</button>` +
-      uniqueTags.map(tag => `<button class="tag-button" data-tag="${tag}">${tag}</button>`).join("");
+    const allTag = document.createElement('button');
+    allTag.className = 'market-tag active';
+    allTag.innerText = 'All';
+    allTag.onclick = () => {
+      currentMarket = '';
+      setActiveTag(allTag);
+      filterAndRender();
+    };
+    tagContainer.appendChild(allTag);
 
-    document.querySelectorAll(".tag-button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        selectedTag = btn.dataset.tag;
-        document.querySelectorAll(".tag-button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        filterList();
-      });
+    markets.forEach(market => {
+      const btn = document.createElement('button');
+      btn.className = 'market-tag';
+      btn.innerText = market;
+      btn.onclick = () => {
+        currentMarket = market;
+        setActiveTag(btn);
+        filterAndRender();
+      };
+      tagContainer.appendChild(btn);
     });
   }
 
-  document.getElementById('searchInput').addEventListener('input', filterList);
+  function setActiveTag(activeBtn) {
+    document.querySelectorAll('.market-tag').forEach(btn => btn.classList.remove('active'));
+    activeBtn.classList.add('active');
+  }
 
-  function filterList() {
+  document.getElementById('searchInput').addEventListener('input', filterAndRender);
+
+  function filterAndRender() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const searchPattern = new RegExp(searchTerm, 'i');
 
-    const filtered = businessData.filter(item => {
-      const matchSearch = (
-        item.personName.toLowerCase().includes(searchTerm) ||
-        item.businessName.toLowerCase().includes(searchTerm) ||
-        item.businessNameEnglish.toLowerCase().includes(searchTerm) ||
-        item.businessDescription.toLowerCase().includes(searchTerm) ||
-        item.businessAddress.toLowerCase().includes(searchTerm)
-      );
+    let filteredData = businessData.filter(item =>
+      item.category === 'Store' &&
+      (!currentMarket || item.marketArea === currentMarket) &&
+      (
+        searchPattern.test(item.personName) ||
+        searchPattern.test(item.businessName) ||
+        searchPattern.test(item.businessNameEnglish) ||
+        searchPattern.test(item.businessDescription) ||
+        searchPattern.test(item.businessAddress)
+      )
+    );
 
-      const matchTag = selectedTag === 'All' || item.marketArea === selectedTag;
-
-      return matchSearch && matchTag;
-    });
-
-    renderList(filtered);
+    renderList(filteredData);
   }
 
   function renderList(data) {
