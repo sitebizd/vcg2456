@@ -184,7 +184,7 @@
     let searchPattern = new RegExp(searchTerm, 'i');
 
     let filteredData = businessData.filter(item =>
-      item.category === 'Medical Store' &&
+      item.category === 'Store' &&
       (searchPattern.test(item.personName) ||
        searchPattern.test(item.businessName) ||
        searchPattern.test(item.businessNameEnglish) ||

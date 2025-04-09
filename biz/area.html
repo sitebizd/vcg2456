@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Business List</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -11,8 +11,74 @@
     h1 { text-align: center; margin-bottom: 20px; color: #333; }
     .container { width: 100%; margin: 0 auto; padding: 10px; text-align: center; }
 
-    .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-    select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .tag-button {
+      background-color: #eee;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .tag-button.active,
+    .tag-button:hover {
+      background-color: #0000FF;
+      color: #fff;
+    }
+
+    .business-card { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background-color: #fff; 
+      padding: 15px; 
+      margin-bottom: 15px;
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%; 
+      max-width: 600px; 
+      margin-left: auto; 
+      margin-right: auto;
+    }
+
+    .info { 
+      flex-grow: 1; 
+      padding-right: 15px; 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      text-align: left; 
+    }
+
+    .title, .subtitle, .person { 
+      white-space: normal; 
+      word-break: break-word; 
+      text-align: left; 
+    }
+
+    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
+    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
+    .subtitle { font-size: 0.8rem; color: #777; }
+
+    .phone-icon { 
+      width: 40px; height: 40px; background-color: #0000FF;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-left: auto;
+    }
+
+    .phone-icon i { color: #fff; font-size: 20px; }
+
+    .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
+    .image img { width: 100%; height: 100%; object-fit: cover; }
 
     .search-container {
       position: relative;
@@ -45,57 +111,6 @@
       box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
     }
 
-    .business-card { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      background-color: #fff; 
-      padding: 15px; 
-      margin-bottom: 15px;
-      border-radius: 8px; 
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      width: 100%; 
-      max-width: 600px; 
-      margin-left: auto; 
-      margin-right: auto;
-    }
-
-    .info { 
-      flex-grow: 1; 
-      padding-right: 15px; 
-      overflow: hidden; 
-      display: flex; 
-      flex-direction: column; 
-      text-align: left;
-    }
-
-    .title, .subtitle, .person { 
-      white-space: normal; 
-      word-break: break-word; 
-      text-align: left;
-    }
-
-    .title { font-size: 1rem; font-weight: bold; color: #0000FF; margin-bottom: 5px; }
-    .person { font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 5px; }
-    .subtitle { font-size: 0.8rem; color: #777; }
-
-    .phone-icon { 
-      width: 40px; 
-      height: 40px; 
-      background-color: #0000FF;
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      flex-shrink: 0; 
-      margin-left: auto;
-    }
-
-    .phone-icon i { color: #fff; font-size: 20px; }
-
-    .image { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; margin-right: 15px; flex-shrink: 0; }
-    .image img { width: 100%; height: 100%; object-fit: cover; }
-
     #businessCount { text-align: center; margin-top: 10px; font-weight: bold; }
   </style>
 </head>
@@ -104,16 +119,12 @@
 <h1>Business List</h1>
 
 <div class="container">
-  <div class="filters">
-    <select id="marketAreaSelect">
-      <option value="">All Market Areas</option>
-    </select>
-  </div>
-
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="Search by Business Name...">
     <i class="fa fa-search search-icon"></i>
   </div>
+
+  <div class="tags-container" id="tagsContainer"></div>
 
   <div id="businessCount"></div><br>
   <div id="businessList"></div>
@@ -122,72 +133,87 @@
 <script>
   const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
   let businessData = [];
-  let marketAreas = new Set();
+  let selectedTag = 'All';
 
   async function fetchCSV() {
     try {
       const response = await fetch(SPREADSHEET_URL);
       const data = await response.text();
       businessData = parseCSV(data);
-
-      populateMarketAreas();
-      filterList(); // auto-filter for 'Medical Store'
+      createTags(businessData);
+      renderList(businessData);
     } catch (error) {
       console.error("Error fetching CSV:", error);
     }
   }
 
   function parseCSV(text) {
-    const lines = text.trim().split("\n").slice(1);
+    const lines = text.trim().split("\n");
+    const header = lines[0].split(",");
     const rows = [];
-    const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
 
-    lines.forEach(line => {
-      const matches = [];
-      let match;
-      while ((match = regex.exec(line))) {
-        matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
-      }
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(",");
+      const entry = {};
+      header.forEach((h, index) => {
+        entry[h.trim()] = (values[index] || "").trim();
+      });
 
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, , , category, subCategory, mobileNumber, , , , , , , image1] = matches;
+      rows.push({
+        profileID: entry["profileID"],
+        personName: entry["personName"],
+        businessName: entry["businessName"],
+        businessNameEnglish: entry["businessNameEnglish"],
+        businessDescription: entry["businessDescription"],
+        businessAddress: entry["businessAddress"],
+        category: entry["category"],
+        marketArea: entry["marketArea"],
+        image1: entry["image1"],
+        mobileNumber: entry["mobileNumber"]
+      });
+    }
 
-      if (profileID && businessName) {
-        rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, marketArea, category, image1, mobileNumber });
-
-        if (marketArea) marketAreas.add(marketArea);
-      }
-    });
-
-    return rows;
+    return rows.filter(r => r.profileID && r.businessName);
   }
 
-  function populateMarketAreas() {
-    const select = document.getElementById('marketAreaSelect');
-    marketAreas.forEach(area => {
-      const option = document.createElement('option');
-      option.value = area;
-      option.textContent = area;
-      select.appendChild(option);
+  function createTags(data) {
+    const tagsContainer = document.getElementById("tagsContainer");
+    const uniqueTags = Array.from(new Set(data.map(item => item.marketArea).filter(Boolean)));
+    uniqueTags.sort();
+
+    tagsContainer.innerHTML = `<button class="tag-button active" data-tag="All">All</button>` +
+      uniqueTags.map(tag => `<button class="tag-button" data-tag="${tag}">${tag}</button>`).join("");
+
+    document.querySelectorAll(".tag-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        selectedTag = btn.dataset.tag;
+        document.querySelectorAll(".tag-button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        filterList();
+      });
     });
   }
+
+  document.getElementById('searchInput').addEventListener('input', filterList);
 
   function filterList() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const selectedMarketArea = document.getElementById('marketAreaSelect').value;
 
-    const searchPattern = new RegExp(searchTerm, 'i');
+    const filtered = businessData.filter(item => {
+      const matchSearch = (
+        item.personName.toLowerCase().includes(searchTerm) ||
+        item.businessName.toLowerCase().includes(searchTerm) ||
+        item.businessNameEnglish.toLowerCase().includes(searchTerm) ||
+        item.businessDescription.toLowerCase().includes(searchTerm) ||
+        item.businessAddress.toLowerCase().includes(searchTerm)
+      );
 
-    const filteredData = businessData.filter(item =>
-      item.category === 'Store' &&
-      (!selectedMarketArea || item.marketArea === selectedMarketArea) &&
-      (searchPattern.test(item.personName) ||
-       searchPattern.test(item.businessName) ||
-       searchPattern.test(item.businessNameEnglish) ||
-       searchPattern.test(item.businessDescription) ||
-       searchPattern.test(item.businessAddress))
-    );
+      const matchTag = selectedTag === 'All' || item.marketArea === selectedTag;
 
-    renderList(filteredData);
+      return matchSearch && matchTag;
+    });
+
+    renderList(filtered);
   }
 
   function renderList(data) {
@@ -221,26 +247,6 @@
         </div>
       `;
     });
-  }
-
-  document.getElementById('searchInput').addEventListener('input', filterList);
-  document.getElementById('marketAreaSelect').addEventListener('change', filterList);
-
-
-  function filterList() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    let searchPattern = new RegExp(searchTerm, 'i');
-
-
-    let filteredData = businessData.filter(item => 
-      searchPattern.test(item.personName) ||
-      searchPattern.test(item.businessName) ||
-      searchPattern.test(item.businessNameEnglish) ||
-      searchPattern.test(item.businessDescription) ||
-      searchPattern.test(item.businessAddress)
-    );
-
-    renderList(filteredData);
   }
 
   fetchCSV();
