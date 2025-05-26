@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f2f2f2, #e0e0e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 24px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+    }
+    input[type="number"] {
+      width: 95%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input[readonly] {
+      background-color: #f9f9f9;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Trading Calculator</h2>
+
+    <label>Total Investment Amount</label>
+    <input type="number" id="investment" value="100000">
+
+    <label>One Stock Price</label>
+    <input type="number" id="stockPrice" placeholder="Enter stock price">
+
+    <label>Total Stocks</label>
+    <input type="number" id="totalStocks" readonly>
+
+    <label>Profit Percent</label>
+    <input type="number" id="profitPercent" value="0.3" step="0.01">
+
+    <label>Sell Target Price</label>
+    <input type="number" id="sellTargetPrice" readonly>
+
+    <button onclick="resetCalculator()">Reset Calculator</button>
+  </div>
+
+  <script>
+    const investmentInput = document.getElementById('investment');
+    const stockPriceInput = document.getElementById('stockPrice');
+    const totalStocksInput = document.getElementById('totalStocks');
+    const profitPercentInput = document.getElementById('profitPercent');
+    const sellTargetPriceInput = document.getElementById('sellTargetPrice');
+
+    function calculate() {
+      const investment = parseFloat(investmentInput.value) || 0;
+      const stockPrice = parseFloat(stockPriceInput.value) || 0;
+      const profitPercent = parseFloat(profitPercentInput.value) || 0;
+
+      if (stockPrice > 0) {
+        const totalStocks = Math.floor(investment / stockPrice);
+        totalStocksInput.value = totalStocks;
+        const sellPrice = stockPrice + (stockPrice * profitPercent / 100);
+        sellTargetPriceInput.value = sellPrice.toFixed(2);
+      } else {
+        totalStocksInput.value = '';
+        sellTargetPriceInput.value = '';
+      }
+    }
+
+    stockPriceInput.addEventListener('input', calculate);
+    investmentInput.addEventListener('input', calculate);
+    profitPercentInput.addEventListener('input', calculate);
+
+    function resetCalculator() {
+      investmentInput.value = '100000';
+      stockPriceInput.value = '';
+      totalStocksInput.value = '';
+      profitPercentInput.value = '0.3';
+      sellTargetPriceInput.value = '';
+    }
+  </script>
+</body>
+</html>
