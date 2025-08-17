@@ -137,7 +137,7 @@
 </div>
 
 <script>
-  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1hJeRy7iYhtI8QBwfXv9YvuXXCCMafDrj17b55UHFCfQ/export?format=csv';
+  const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1fZ34kO68rB2UT3p-m9T16f7wYwiHMaJ9GIfBOVEpekk/export?format=csv';
   let businessData = [];
 
   // Fetch CSV Data
@@ -168,7 +168,7 @@
         matches.push((match[1] || match[2] || "").replace(/""/g, '"').trim());
       }
 
-      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , category, subCategory, mobileNumber, , , , , , , image1] = matches;
+      const [profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, , , , category, subCategory, mobileNumber, , , , , , , , , , , , image1] = matches;
 
       if (profileID && businessName) {
         rows.push({ profileID, personName, businessName, businessNameEnglish, businessDescription, businessAddress, category, image1, mobileNumber });
