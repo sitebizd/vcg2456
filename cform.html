@@ -22,17 +22,17 @@
   <div id="result"></div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwTzP_Z_qMQVGrK7g_U5tXWN5zzLE0aZqCIAhe_GM1gSuBIIqTVBuT7uqdmgLZx99fUsA/exec";
+    const proxyURL = "https://vedchitra.com/proxy.php";
 
     document.getElementById("myForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
 
-      fetch(scriptURL, { method: "POST", body: formData })
-        .then(response => response.json())
+      fetch(proxyURL, { method: "POST", body: formData })
+        .then(res => res.json())
         .then(data => {
           if (data.result === "success") {
-            document.getElementById("result").innerHTML = "✅ Thanks, your form was submitted!";
+            document.getElementById("result").innerHTML = "✅ Thanks " + data.name + ", your form was submitted!";
             document.getElementById("myForm").reset();
           } else {
             document.getElementById("result").innerHTML = "❌ Error: " + data.error;
