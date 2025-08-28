@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Form</title>
+  <style>
+    body { font-family: Arial; margin: 50px; }
+    form { max-width: 400px; margin: auto; }
+    input, textarea { width: 100%; margin: 8px 0; padding: 10px; }
+    button { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+    button:hover { background: #218838; }
+    #result { margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>Contact Us</h2>
+  <form id="myForm">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <textarea name="message" placeholder="Your Message"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwTzP_Z_qMQVGrK7g_U5tXWN5zzLE0aZqCIAhe_GM1gSuBIIqTVBuT7uqdmgLZx99fUsA/exec";
+
+    document.getElementById("myForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      fetch(scriptURL, { method: "POST", body: formData })
+        .then(response => response.json())
+        .then(data => {
+          if (data.result === "success") {
+            document.getElementById("result").innerHTML = "✅ Thanks, your form was submitted!";
+            document.getElementById("myForm").reset();
+          } else {
+            document.getElementById("result").innerHTML = "❌ Error: " + data.error;
+          }
+        })
+        .catch(err => {
+          document.getElementById("result").innerHTML = "⚠️ Network Error: " + err;
+        });
+    });
+  </script>
+</body>
+</html>
