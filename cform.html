@@ -3,16 +3,16 @@
 <head>
   <title>Contact Form</title>
   <style>
-    body { font-family: Arial; margin: 50px; }
-    form { max-width: 400px; margin: auto; }
-    input, textarea { width: 100%; margin: 8px 0; padding: 10px; }
-    button { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+    body { font-family: Arial, sans-serif; margin: 50px; background: #f9f9f9; }
+    form { max-width: 400px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, textarea { width: 100%; margin: 8px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; border-radius: 5px; }
     button:hover { background: #218838; }
-    #result { margin-top: 15px; }
+    #result { margin-top: 15px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h2>Contact Us</h2>
+  <h2 style="text-align:center;">Contact Us</h2>
   <form id="myForm">
     <input type="text" name="name" placeholder="Your Name" required>
     <input type="email" name="email" placeholder="Your Email" required>
@@ -22,24 +22,33 @@
   <div id="result"></div>
 
   <script>
-    const proxyURL = "https://vedchitra.com/proxy.php";
+    const proxyURL = "https://vedchitra.com/proxy.php"; // <-- your server
 
     document.getElementById("myForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
 
       fetch(proxyURL, { method: "POST", body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (data.result === "success") {
-            document.getElementById("result").innerHTML = "✅ Thanks " + data.name + ", your form was submitted!";
-            document.getElementById("myForm").reset();
-          } else {
-            document.getElementById("result").innerHTML = "❌ Error: " + data.error;
+        .then(res => res.text()) // first get raw response
+        .then(text => {
+          try {
+            const data = JSON.parse(text); // try parse JSON
+            if (data.result === "success") {
+              document.getElementById("result").innerHTML =
+                "✅ Thanks " + data.name + ", your form was submitted!";
+              document.getElementById("myForm").reset();
+            } else {
+              document.getElementById("result").innerHTML =
+                "❌ Error: " + (data.error || "Unknown error");
+            }
+          } catch (e) {
+            document.getElementById("result").innerHTML =
+              "⚠️ Unexpected response: " + text;
           }
         })
         .catch(err => {
-          document.getElementById("result").innerHTML = "⚠️ Network Error: " + err;
+          document.getElementById("result").innerHTML =
+            "⚠️ Network Error: " + err;
         });
     });
   </script>
